@@ -1,0 +1,11 @@
+.env
+logs/
+dist/
+__pycache__/
+.venv/
+node_modules/
+*.zip
+*.log
+edb_health_workflow*.json1
+edb_health_workflow*.json2
+edb_health_workflow (*).json*

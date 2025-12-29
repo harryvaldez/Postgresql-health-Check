@@ -1,0 +1,194 @@
+{
+  "timestamp": "2023-10-27T10:00:00Z",
+  "hostname": "db-prod-01",
+  "system": {
+    "load_avg": { "1min": 1.5, "5min": 1.2, "15min": 1.0 },
+    "memory_mb": { "total": 16000, "used": 12000, "free": 4000 },
+    "disk_usage_percent": 75
+  },
+  "database_status": {
+    "service_status": "active",
+    "connection_status": "success"
+  },
+  "performance": {
+    "total_connections": 55,
+    "active_connections": 45,
+    "idle_connections": 10,
+    "idle_in_transaction_connections": 0,
+    "long_running_queries_count": 2,
+    "cache_hit_ratio": 98.5
+  },
+  "database": {
+    "stats": {
+      "datname": "edb",
+      "numbackends": 55,
+      "xact_commit": 1234567,
+      "xact_rollback": 123,
+      "blks_read": 98765,
+      "blks_hit": 7654321,
+      "tup_returned": 123456789,
+      "tup_fetched": 23456789,
+      "tup_inserted": 123456,
+      "tup_updated": 23456,
+      "tup_deleted": 3456,
+      "conflicts": 0,
+      "deadlocks": 0,
+      "temp_files": 12,
+      "temp_bytes": 104857600
+    }
+  },
+  "locks": {
+    "waiting_sessions": 1,
+    "top_waiters": [
+      {
+        "pid": 12345,
+        "usename": "app_user",
+        "datname": "edb",
+        "state": "active",
+        "runtime_seconds": 120,
+        "wait_event_type": "Lock",
+        "wait_event": "transactionid",
+        "query": "UPDATE public.orders SET status='paid' WHERE id=1001;"
+      }
+    ],
+    "blocking_chains": [
+      {
+        "blocked_pid": 12345,
+        "blocking_pid": 23456,
+        "blocked_for_seconds": 120,
+        "blocked_query": "UPDATE public.orders SET status='paid' WHERE id=1001;",
+        "blocking_query": "VACUUM (ANALYZE) public.orders;"
+      }
+    ]
+  },
+  "vacuum": {
+    "top_dead_tuples": [
+      {
+        "schemaname": "public",
+        "relname": "audit_logs",
+        "n_live_tup": 1000000,
+        "n_dead_tup": 250000,
+        "last_vacuum": null,
+        "last_autovacuum": "2023-10-27 09:30:00+00",
+        "last_analyze": "2023-10-27 09:31:00+00",
+        "last_autoanalyze": null
+      }
+    ],
+    "freeze_risk": [
+      {
+        "schemaname": "public",
+        "relname": "large_history",
+        "freeze_age": 150000000,
+        "total_bytes": 2147483648
+      }
+    ]
+  },
+  "wal": {
+    "bgwriter": {
+      "checkpoints_timed": 100,
+      "checkpoints_req": 5,
+      "checkpoint_write_time": 123456,
+      "checkpoint_sync_time": 23456,
+      "buffers_checkpoint": 98765,
+      "buffers_clean": 12345,
+      "buffers_backend": 54321,
+      "maxwritten_clean": 0,
+      "buffers_alloc": 1234567
+    }
+  },
+  "storage": {
+    "top_tables": [
+      {
+        "schemaname": "public",
+        "table_name": "audit_logs",
+        "total_bytes": 3221225472,
+        "table_bytes": 2147483648,
+        "indexes_bytes": 1073741824,
+        "total_size": "3072 MB"
+      },
+      {
+        "schemaname": "public",
+        "table_name": "orders",
+        "total_bytes": 1073741824,
+        "table_bytes": 805306368,
+        "indexes_bytes": 268435456,
+        "total_size": "1024 MB"
+      }
+    ],
+    "top_indexes": [
+      {
+        "schemaname": "public",
+        "index_name": "idx_audit_logs_created_at",
+        "table_name": "public.audit_logs",
+        "index_bytes": 1073741824,
+        "index_size": "1024 MB"
+      },
+      {
+        "schemaname": "public",
+        "index_name": "orders_pkey",
+        "table_name": "public.orders",
+        "index_bytes": 268435456,
+        "index_size": "256 MB"
+      }
+    ]
+  },
+  "replication": {
+    "is_in_recovery": "f",
+    "connected_replicas": 2,
+    "replication_status": [
+      {
+        "pid": 34567,
+        "client_addr": "10.0.0.12",
+        "state": "streaming",
+        "sent_lsn": "0/5000010",
+        "write_lsn": "0/5000010",
+        "flush_lsn": "0/5000010",
+        "replay_lsn": "0/5000010",
+        "write_lag": null,
+        "flush_lag": null,
+        "replay_lag": null
+      }
+    ],
+    "replication_slots": [
+      {
+        "slot_name": "logical_slot_1",
+        "slot_type": "logical",
+        "active": true,
+        "retained_wal_bytes": 0
+      }
+    ]
+  },
+  "backup": {
+    "archive_mode": "on",
+    "last_failed_archive": null
+  },
+  "bloat": {
+    "top_bloated_tables": [
+      { "table_name": "public.audit_logs", "bloat_size_bytes": 52428800, "bloat_ratio": 25.5 },
+      { "table_name": "public.users", "bloat_size_bytes": 1048576, "bloat_ratio": 5.2 }
+    ],
+    "large_indexes": [
+      { "table_name": "public.audit_logs", "index_name": "idx_audit_logs_created_at", "index_size": "250 MB", "index_size_bytes": 262144000 }
+    ]
+  },
+  "configuration": {
+    "settings": {
+      "ssl": "on",
+      "log_connections": "on",
+      "log_disconnections": "off",
+      "log_statement": "ddl",
+      "password_encryption": "md5",
+      "port": "5444",
+      "max_connections": "100",
+      "shared_buffers": "128MB",
+      "work_mem": "4MB",
+      "maintenance_work_mem": "64MB",
+      "effective_cache_size": "4GB",
+      "autovacuum": "on",
+      "autovacuum_max_workers": "3",
+      "wal_level": "replica",
+      "checkpoint_completion_target": "0.5"
+    }
+  },
+  "meta": { "version": "1.3" }
+}
