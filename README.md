@@ -113,7 +113,7 @@ The system monitors the following:
     *   **Index Bloat**: Top bloated indexes.
 12. **Configuration**: Selected `pg_settings` values for security and performance.
 
-Note: `largest_tables`, `largest_indexes`, `top_bloated_tables`, and `large_indexes` are queried from `valdezha.*` objects in `collect_metrics.sh`. Ensure those views/materialized views exist in your database, or update the queries to match your environment.
+Note: the bloat metrics (`top_bloated_tables` and `large_indexes`) are queried from `valdezha.*` objects in `collect_metrics.sh`. Ensure those views/materialized views exist in your database, or update the queries to match your environment.
 
 ## AI Analysis & Alerting
 

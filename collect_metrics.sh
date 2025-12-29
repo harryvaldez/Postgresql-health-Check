@@ -191,7 +191,7 @@ collect_database_metrics() {
 
     db_stats=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$db_stats_query" 2>/dev/null)
     if [[ -z "$db_stats" ]]; then db_stats="{}"; fi
-    echo "\"stats\": $db_stats,"
+    echo "\"stats\": $db_stats"
 
     echo "},"
 }
@@ -560,6 +560,22 @@ if [[ -n "$WEBHOOK_URL" && -n "$N8N_JWT_SECRET" ]]; then
     fi
 
     if [[ -n "$PYTHON_CMD" ]]; then
+        JSON_VALIDATE_OUTPUT=$($PYTHON_CMD -c "
+import json, sys, io
+try:
+    with io.open('$OUTPUT_FILE', 'r', encoding='utf-8') as f:
+        json.load(f)
+except Exception as e:
+    sys.stderr.write(str(e))
+    sys.exit(1)
+" 2>&1)
+        JSON_VALIDATE_EXIT_CODE=$?
+        if [[ $JSON_VALIDATE_EXIT_CODE -ne 0 ]]; then
+            log_error "Metrics JSON is invalid. Not sending to webhook. Error: $JSON_VALIDATE_OUTPUT"
+            echo "Metrics JSON is invalid. Not sending to webhook. Error: $JSON_VALIDATE_OUTPUT" >&2
+            exit 1
+        fi
+
         # Capture both stdout and stderr to debug failures
         # Pass secret via env var to avoid quoting issues
         export N8N_JWT_SECRET
@@ -593,7 +609,8 @@ except Exception as e:
              # Send data to webhook
              log_msg "Sending metrics to webhook..."
              echo "Sending metrics to webhook..." >&2
-             response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$WEBHOOK_URL" \
+             response_file=$(mktemp)
+             response=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$WEBHOOK_URL" \
                 -H "Content-Type: application/json" \
                 -H "User-Agent: EDB-Monitor/1.0" \
                 -H "Authorization: Bearer $JWT_TOKEN" \
@@ -603,9 +620,14 @@ except Exception as e:
                  log_msg "Successfully sent metrics to webhook."
                  echo "Successfully sent metrics to webhook." >&2
              else
-                 log_error "Failed to send metrics. HTTP Status: $response"
+                 response_body=$(cat "$response_file" 2>/dev/null | head -c 2000)
+                 log_error "Failed to send metrics. HTTP Status: $response. Response: $response_body"
                  echo "Failed to send metrics. HTTP Status: $response" >&2
+                 if [[ -n "$response_body" ]]; then
+                     echo "Response body (truncated): $response_body" >&2
+                 fi
              fi
+             rm -f "$response_file" 2>/dev/null || true
         else
              log_error "Failed to generate JWT token. Error: $JWT_OUTPUT"
              echo "Failed to generate JWT token. Error: $JWT_OUTPUT" >&2
