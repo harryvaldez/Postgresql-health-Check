@@ -1,0 +1,1109 @@
+{
+  "name": "EDB Postgres Health Check Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "edb-health-check",
+        "authentication": "jwtAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -3104,
+        -144
+      ],
+      "id": "cc45e267-cd4f-4a7e-a89b-b8473fb1c04a",
+      "webhookId": "3e56929e-dbe0-4d36-88f2-30a124aa3850",
+      "credentials": {
+        "jwtAuth": {
+          "id": "mISNzbB1PGqLkhF9",
+          "name": "JWT Auth account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const jiraTasks = [];\nconst inputItems = $input.all();\n\nfor (const item of inputItems) {\n    if (item.json.output && Array.isArray(item.json.output)) {\n        for (const issue of item.json.output) {\n            const description = [\n                `Description`,\n                issue.Description || 'No description provided.',\n                ``,\n                `Immediate Remediation Steps`\n            ].concat(issue['Immediate remediation steps'] || ['No immediate remediation steps provided.']).map(step => ` ${step}`)\n            .concat([\n                ``,\n                `Preventative Actions and Proactive Monitoring Improvements`\n            ])\n            .concat(issue['Preventative actions and proactive monitoring improvements'] || ['No preventative actions provided.']).map(action => ` ${action}`)\n            .join(String.fromCharCode(10));\n\n            // Map priority: Critical=1, High=2, Medium=3\n            const priStr = (issue.Priority || 'Medium').toLowerCase();\n            const priorityMap = { critical: 2, high: 2, medium: 3 };\n            const numericPriority = priorityMap[priStr] ?? 3;\n\n            // Only create Jira tasks for priority 1 (Critical) and 2 (High)\n            if (numericPriority <= 2) {\n                const task = {\n                    summary: issue.Issue || 'No summary provided.',\n                    description: description,\n                    priority: numericPriority,\n                    labels: (issue.Issue || '').toLowerCase().split(' ').map(l => l.replace(/[^a-z0-9]/g, ''))\n                };\n                jiraTasks.push({ json: task });\n            }\n            // Else: skip Medium (3) and lower priorities\n        }\n    }\n}\n\nreturn jiraTasks;\n"
+      },
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        144
+      ],
+      "id": "1e8f7199-30e7-40f0-9311-32c19219a2d8",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "notEqual",
+              "value2": "OK"
+            }
+          ]
+        }
+      },
+      "name": "If Issues Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        144
+      ],
+      "id": "0c478b19-7b71-4f46-a73c-41e369a7cbb1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "sIsXD6WgCGD7Gb6i",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/sIsXD6WgCGD7Gb6i",
+          "cachedResultName": "Create Jira Ticket"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        240
+      ],
+      "id": "7ee4a30a-3f40-40fb-b566-e6a6f195896d",
+      "name": "Call 'Create Jira Ticket'"
+    },
+    {
+      "parameters": {},
+      "name": "No Action1",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        48
+      ],
+      "id": "92166a39-3865-48f9-85fe-d3aad679b5ac"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are an expert data analyst specializing in Postgresql/EnterprisedDB Advanced Server 9.6 monitoring and performance optimization.\n\nInput: Using “task breakdown” tool, analyze the provided Postgresql/EnterprisedDB Advanced Server 9.6 monitoring metrics. Use the summary and trimmed details below.\n\n**Server Summary:**\n- Server: {{ $json.body.summary.server }}\n- Timestamp: {{ $json.body.summary.timestamp }}\n- Service Status: {{ $json.body.summary.service_status }}\n- Connection Status: {{ $json.body.summary.connection_status }}\n- Disk Usage: {{ $json.body.summary.disk_usage_percent }}%\n- Load (1min): {{ $json.body.summary.load_avg_1min }}\n- Memory Used: {{ $json.body.summary.memory_used_percent }}%\n- Connections: total {{ $json.body.summary.total_connections }}, active {{ $json.body.summary.active_connections }}\n- Cache Hit Ratio: {{ $json.body.summary.cache_hit_ratio }}%\n- Deadlocks: {{ $json.body.summary.deadlocks }}\n- Connected Replicas: {{ $json.body.summary.connected_replicas }}\n- Archive Mode: {{ $json.body.summary.archive_mode }}\n\n**Alerts:**\n{{ JSON.stringify($json.body.alerts ?? [], null, 2) }}\n\n**Storage Summary:**\n{{ JSON.stringify($json.body.storage_summary ?? {}, null, 2) }}\n\n**Selected Detailed Metrics (trimmed):**\n{{ JSON.stringify({\n  system: $json.body.system,\n  performance: $json.body.performance,\n  database: $json.body.database,\n  locks: {\n    waiting_sessions: $json.body.locks?.waiting_sessions,\n    top_waiters: ($json.body.locks?.top_waiters ?? []).slice(0, 5),\n    blocking_chains: ($json.body.locks?.blocking_chains ?? []).slice(0, 5)\n  },\n  vacuum: {\n    top_dead_tuples: ($json.body.vacuum?.top_dead_tuples ?? []).slice(0, 10)\n  },\n  wal: $json.body.wal,\n  replication: $json.body.replication,\n  backup: $json.body.backup,\n  bloat: $json.body.bloat,\n  configuration: $json.body.configuration\n}, null, 2) }}\n\nSteps:\n1. Identify the top 3–7 most important issues from the metrics.\n2. If you need historical context, use the Knowledge Base Retriever tool at most once.\n3. Synthesize the real-time metrics with any retrieved context.\n4. Assess security risks and compliance issues based on the data.\n5. Evaluate backup and recovery readiness.\n6. Prioritize issues according to their business impact (Critical, High, Medium, Low).\n7. Enumerate all issues identified and important information about each issue. Make a list of issues and format the list using the Parser tool.\n8. For each issue identified, provide title, priority, brief description, Remediation Steps, preventative actions, and proactive monitoring improvements.\n9. Remove duplicates\n\nExpectation: Use Structured Output Parser tool to format the output. As an output, produce a list of all issues derived from input metrics after analysis. Each issue on the list should have a unique title, derived priority, a brief issue description, identified remediation steps to resolve the identified issue, and realistic preventive actions and monitoring improvements to avoid issue recurrence.\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -2160,
+        160
+      ],
+      "id": "6bdd5a86-ee56-4f5f-ae10-b592ad43b157",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2288,
+        368
+      ],
+      "id": "9cbf09c4-3415-4a53-b43e-2d0c7ccd8df8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Bao7fdo5PoGyndjW",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.timestamp }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -2160,
+        368
+      ],
+      "id": "33a05b05-8883-4e86-b06f-ef87fbe639bc",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "u2CnfCollVH1WfsI",
+          "name": "PG Vector Store"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"Generated schema for Root\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"output\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"Issue\": {\n            \"type\": \"string\"\n          },\n          \"Priority\": {\n            \"type\": \"string\"\n          },\n          \"Description\": {\n            \"type\": \"string\"\n          },\n          \"Immediate remediation steps\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            }\n          },\n          \"Preventative actions and proactive monitoring improvements\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            }\n          }\n        },\n        \"required\": [\n          \"Issue\",\n          \"Priority\",\n          \"Description\",\n          \"Immediate remediation steps\",\n          \"Preventative actions and proactive monitoring improvements\"\n        ]\n      }\n    }\n  },\n  \"required\": [\n    \"output\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1616,
+        368
+      ],
+      "id": "43fbf1d4-a5e7-4815-9bc6-2f71dcb99c84",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jiraTasks = [];\nconst inputItems = $input.all();\n\nfor (const item of inputItems) {\n    if (item.json.output && Array.isArray(item.json.output)) {\n        for (const issue of item.json.output) {\n            const description = [\n                `Description`,\n                issue.Description || 'No description provided.',\n                ``,\n                `Immediate Remediation Steps`\n            ].concat(issue['Immediate remediation steps'] || ['No immediate remediation steps provided.']).map(step => ` ${step}`)\n            .concat([\n                ``,\n                `Preventative Actions and Proactive Monitoring Improvements`\n            ])\n            .concat(issue['Preventative actions and proactive monitoring improvements'] || ['No preventative actions provided.']).map(action => ` ${action}`)\n            .join(String.fromCharCode(10));\n\n            // Map priority: Critical=1, High=2, Medium=3\n            const priStr = (issue.Priority || 'Medium').toLowerCase();\n            const priorityMap = { critical: 1, high: 2, medium: 3 };\n            const numericPriority = priorityMap[priStr] ?? 3;\n\n            // Only create Jira tasks for priority 1 (Critical) and 2 (High)\n            if (numericPriority <= 3) {\n                const task = {\n                    summary: issue.Issue || 'No summary provided.',\n                    description: description,\n                    priority: numericPriority,\n                    labels: (issue.Issue || '').toLowerCase().split(' ').map(l => l.replace(/[^a-z0-9]/g, ''))\n                };\n                jiraTasks.push({ json: task });\n            }\n            // Else: skip Medium (3) and lower priorities\n        }\n    }\n}\n\nreturn jiraTasks;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1568,
+        144
+      ],
+      "id": "0b36da2f-bc22-4883-93d0-ebb8e9b51445",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2368,
+        16
+      ],
+      "id": "e0e8fb33-d0c7-430f-9c48-c47dce877b3b",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Bao7fdo5PoGyndjW",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -2272,
+        16
+      ],
+      "id": "39b4f6a7-b3bc-4757-b261-96bd99db0eef",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        -2320,
+        -160
+      ],
+      "id": "eab5c02e-4b33-44dc-a7a1-32b424ee708a",
+      "name": "Postgres PGVector Store Save",
+      "credentials": {
+        "postgres": {
+          "id": "u2CnfCollVH1WfsI",
+          "name": "PG Vector Store"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1824,
+        576
+      ],
+      "id": "11dac9fb-5d23-4b0e-8f68-571647a3f629",
+      "name": "Knowledge Base Retriever tool",
+      "credentials": {
+        "openAiApi": {
+          "id": "Bao7fdo5PoGyndjW",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": " zajl-=-09ik87676",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        -1904,
+        368
+      ],
+      "id": "c1e2da33-dbef-42f1-b2fc-d32bf8541b6b",
+      "name": "Postgres PGVector Store Retrieve",
+      "credentials": {
+        "postgres": {
+          "id": "u2CnfCollVH1WfsI",
+          "name": "PG Vector Store"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://server.smithery.ai/@Parc-Dev/task-breakdown-server/mcp?api_key=ab7aa914-ac4c-4e96-b95c-f56aa2c489f5&profile=given-mandrill-nZPhDg",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        -2032,
+        368
+      ],
+      "id": "f15afdf0-1087-4ae5-b66d-0640fed10a9b",
+      "name": "Task Breakdown"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        48,
+        768
+      ],
+      "id": "2bb00484-20f0-4810-b509-754838801db2",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e988e79a-59a9-4d60-bfdc-0cbfe7d2fc56",
+              "leftValue": "={{ $json.jwtPayload.name }}",
+              "rightValue": "=Health Check Service for EDB",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2832,
+        784
+      ],
+      "id": "fd23cc4d-9fef-4c2f-976b-6effcf4d4c61",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst inputData = item.json ?? item;\n\nconst envelope = inputData;\n\nfunction bytesToHuman(bytes) {\n  const value = Number(bytes);\n  if (!Number.isFinite(value)) return null;\n  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];\n  let unitIndex = 0;\n  let n = value;\n  while (n >= 1024 && unitIndex < units.length - 1) {\n    n /= 1024;\n    unitIndex += 1;\n  }\n  const rounded = unitIndex === 0 ? n.toFixed(0) : n.toFixed(2);\n  return `${rounded} ${units[unitIndex]}`;\n}\n\nfunction pickMetricsBody(env) {\n  if (env?.body?.body?.data?.data) return env.body.body.data.data;\n  if (env?.body?.data?.data) return env.body.data.data;\n  if (env?.body?.data) return env.body.data;\n  if (env?.body) return env.body;\n  if (env?.data) return env.data;\n  return env;\n}\n\nlet metricsBody = pickMetricsBody(envelope);\nif (metricsBody?.data && typeof metricsBody.data === 'object') metricsBody = metricsBody.data;\n\nconst jwtPayload = envelope.jwtPayload ?? metricsBody?.jwtPayload ?? null;\nconst serverName = jwtPayload?.server_name ?? jwtPayload?.server_ip ?? metricsBody?.hostname ?? metricsBody?.server_name ?? metricsBody?.server ?? 'Unknown';\nconst timestamp = metricsBody?.timestamp ?? jwtPayload?.timestamp ?? null;\n\nconst system = metricsBody?.system ?? {};\nconst memory = system?.memory_mb ?? {};\nconst totalMem = Number(memory.total);\nconst usedMem = Number(memory.used);\nconst memUsedPct = Number.isFinite(totalMem) && totalMem > 0 && Number.isFinite(usedMem) ? (usedMem / totalMem) * 100 : null;\n\nconst performance = metricsBody?.performance ?? {};\nconst databaseStatus = metricsBody?.database_status ?? {};\nconst locks = metricsBody?.locks ?? {};\nconst replication = metricsBody?.replication ?? {};\nconst backup = metricsBody?.backup ?? {};\n\nconst storage = metricsBody?.storage ?? {};\nconst databaseSizeBytes = storage?.database_size?.database_size_bytes ?? null;\nconst tempTotalBytes = storage?.temp_objects?.temp_objects_total_bytes ?? null;\nconst tempObjectsCount = storage?.temp_objects?.temp_objects_count ?? null;\n\nconst largestTables = Array.isArray(storage?.largest_tables) ? storage.largest_tables : [];\nconst largestIndexes = Array.isArray(storage?.largest_indexes) ? storage.largest_indexes : [];\n\nconst storageSummary = {\n  database_size_bytes: databaseSizeBytes,\n  database_size_human: storage?.database_size?.database_size ?? bytesToHuman(databaseSizeBytes),\n  temp_objects_total_bytes: tempTotalBytes,\n  temp_objects_total_human: storage?.temp_objects?.temp_objects_total_size ?? bytesToHuman(tempTotalBytes),\n  temp_objects_count: tempObjectsCount,\n  largest_tables_top: largestTables.slice(0, 10).map(t => ({\n    name: t?.schemaname && t?.table_name ? `${t.schemaname}.${t.table_name}` : (t?.table_name ?? 'Unknown'),\n    total_bytes: t?.total_bytes ?? null,\n    total_size: t?.total_size ?? bytesToHuman(t?.total_bytes)\n  })),\n  largest_indexes_top: largestIndexes.slice(0, 10).map(i => ({\n    name: i?.schemaname && i?.index_name ? `${i.schemaname}.${i.index_name}` : (i?.index_name ?? 'Unknown'),\n    table_name: i?.table_name ?? null,\n    index_bytes: i?.index_bytes ?? null,\n    index_size: i?.index_size ?? bytesToHuman(i?.index_bytes)\n  }))\n};\n\nconst summary = {\n  server: serverName,\n  timestamp,\n  service_status: databaseStatus?.service_status ?? null,\n  connection_status: databaseStatus?.connection_status ?? null,\n  disk_usage_percent: system?.disk_usage_percent ?? null,\n  load_avg_1min: system?.load_avg?.['1min'] ?? null,\n  memory_used_percent: memUsedPct === null ? null : Number(memUsedPct.toFixed(2)),\n  total_connections: performance?.total_connections ?? null,\n  active_connections: performance?.active_connections ?? null,\n  long_running_queries_count: performance?.long_running_queries_count ?? null,\n  cache_hit_ratio: performance?.cache_hit_ratio ?? null,\n  waiting_sessions: locks?.waiting_sessions ?? null,\n  deadlocks: metricsBody?.database?.stats?.deadlocks ?? null,\n  connected_replicas: replication?.connected_replicas ?? null,\n  archive_mode: backup?.archive_mode ?? null\n};\n\nconst alerts = [];\nif (databaseStatus?.service_status && String(databaseStatus.service_status).toLowerCase() !== 'active') {\n  alerts.push({ severity: 'critical', code: 'service_not_active', message: 'Database service is not active', value: databaseStatus.service_status });\n}\nif (databaseStatus?.connection_status && String(databaseStatus.connection_status).toLowerCase() !== 'success') {\n  alerts.push({ severity: 'critical', code: 'connection_failed', message: 'Database connection did not succeed', value: databaseStatus.connection_status });\n}\nconst diskUsage = Number(system?.disk_usage_percent);\nif (Number.isFinite(diskUsage) && diskUsage >= 90) {\n  alerts.push({ severity: 'critical', code: 'disk_usage_high', message: 'Disk usage is >= 90%', value: diskUsage });\n} else if (Number.isFinite(diskUsage) && diskUsage >= 80) {\n  alerts.push({ severity: 'warning', code: 'disk_usage_elevated', message: 'Disk usage is >= 80%', value: diskUsage });\n}\n\nconst normalizedBody = {\n  ...metricsBody,\n  summary,\n  storage_summary: storageSummary,\n  alerts\n};\n\nconst output = {\n  ...envelope,\n  body: normalizedBody,\n  jwtPayload: jwtPayload ?? envelope.jwtPayload\n};\n\nreturn [{ json: output }];\n"
+      },
+      "id": "3f7fc0a5-7b0a-4512-9c36-5bc8e4028d9d",
+      "name": "Parse Metric Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2496,
+        784
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "claritasllc.app.n8n.cloud",
+            "user-agent": "EDB-Monitor/1.0",
+            "content-length": "9091",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZGItbW9uaXRvciIsIm5hbWUiOiJIZWFsdGggQ2hlY2sgU2VydmljZSBmb3IgRURCIiwicm9sZSI6InNlcnZpY2UiLCJzZXJ2aWNlX2lkIjoibW9uaXRvci1lZGItYXMtOS42Iiwic2VydmVyX25hbWUiOiJzbXNkZXZkYmEwMSIsInRpbWVzdGFtcCI6IjIwMjUtMTItMzBUMDU6MjA6NDhaIiwiaWF0IjoxNzY3MDcyMDgxLCJleHAiOjE3NjcwNzIzODF9.NU-grBwugcpZ9pHBMuDwjUPwfQt1RI3eoAFRaytMnrg",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "40.122.44.55",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9b5f17dc8461b31e-DFW",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "40.122.44.55, 162.159.106.75",
+            "x-forwarded-host": "claritasllc.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-4-644c4bcdb9-tgq2d",
+            "x-is-trusted": "yes",
+            "x-real-ip": "40.122.44.55"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "timestamp": "2025-12-30T05:20:48Z",
+            "hostname": "smsdevdba01",
+            "system": {
+              "load_avg": {
+                "1min": 0.43,
+                "5min": 0.42,
+                "15min": 0.66
+              },
+              "memory_mb": {
+                "total": 128942,
+                "used": 19345,
+                "free": 52194
+              },
+              "disk_usage_percent": 38
+            },
+            "database_status": {
+              "service_status": "inactive",
+              "connection_status": "success"
+            },
+            "performance": {
+              "total_connections": 283,
+              "active_connections": 1,
+              "idle_connections": 282,
+              "idle_in_transaction_connections": 0,
+              "long_running_queries_count": 0,
+              "cache_hit_ratio": 90.52
+            },
+            "database": {
+              "stats": {
+                "datname": "lenexa",
+                "numbackends": 283,
+                "xact_commit": 682571826,
+                "xact_rollback": 72737,
+                "blks_read": 78789477815,
+                "blks_hit": 6917408734927,
+                "tup_returned": 51284300924931,
+                "tup_fetched": 754745360909,
+                "tup_inserted": 817821146574,
+                "tup_updated": 628457674,
+                "tup_deleted": 45414032,
+                "conflicts": 0,
+                "deadlocks": 3,
+                "temp_files": 29689,
+                "temp_bytes": 21202193065657
+              }
+            },
+            "locks": {
+              "waiting_sessions": 0,
+              "top_waiters": [],
+              "blocking_chains": []
+            },
+            "vacuum": {
+              "top_dead_tuples": [
+                {
+                  "schemaname": "pg_temp_12",
+                  "relname": "temp_010953886510_geo_json_for_layers",
+                  "n_live_tup": 1813,
+                  "n_dead_tup": 5439,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_162",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 123626,
+                  "n_dead_tup": 2709,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_12",
+                  "relname": "temp_010935796537_geo_json_for_layers",
+                  "n_live_tup": 388,
+                  "n_dead_tup": 1164,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_237",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 153218,
+                  "n_dead_tup": 1037,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_163",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 130901,
+                  "n_dead_tup": 799,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_239",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 122664,
+                  "n_dead_tup": 670,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_160",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 121738,
+                  "n_dead_tup": 641,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_236",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 119870,
+                  "n_dead_tup": 626,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_238",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 118112,
+                  "n_dead_tup": 592,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
+                  "schemaname": "pg_temp_161",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 120513,
+                  "n_dead_tup": 585,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                }
+              ],
+              "freeze_risk": [
+                {
+                  "schemaname": "pg_temp_645",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36515216,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_617",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36509402,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_627",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36501873,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_646",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36501837,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_657",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36501837,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_655",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36501837,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_656",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36500411,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_675",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36500411,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_665",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36500411,
+                  "total_bytes": 0
+                },
+                {
+                  "schemaname": "pg_temp_683",
+                  "relname": "index_advisor_log",
+                  "freeze_age": 36500038,
+                  "total_bytes": 0
+                }
+              ]
+            },
+            "wal": {
+              "bgwriter": {
+                "checkpoints_timed": 47376,
+                "checkpoints_req": 227822,
+                "checkpoint_write_time": 13721845624,
+                "checkpoint_sync_time": 4007782,
+                "buffers_checkpoint": 3449513692,
+                "buffers_clean": 112683412,
+                "buffers_backend": 50864602506,
+                "maxwritten_clean": 8947,
+                "buffers_alloc": 10967512401
+              }
+            },
+            "storage": {
+              "database_size": {
+                "database_size_bytes": 6955202518096,
+                "database_size": "6478 GB"
+              },
+              "temp_objects": {
+                "temp_objects_total_bytes": 520511488,
+                "temp_objects_total_size": "496 MB",
+                "temp_objects_count": 21871
+              },
+              "largest_tables": [
+                {
+                  "schemaname": "sys",
+                  "table_name": "edb$stat_all_indexes_tmp",
+                  "total_bytes": 199292395520,
+                  "table_bytes": 199237296128,
+                  "indexes_bytes": 0,
+                  "total_size": "186 GB"
+                },
+                {
+                  "schemaname": "sys",
+                  "table_name": "edb$statio_all_indexes_tmp",
+                  "total_bytes": 199135469568,
+                  "table_bytes": 199080419328,
+                  "indexes_bytes": 0,
+                  "total_size": "185 GB"
+                },
+                {
+                  "schemaname": "sys",
+                  "table_name": "edb$statio_all_indexes",
+                  "total_bytes": 115882844160,
+                  "table_bytes": 98490122240,
+                  "indexes_bytes": 17368498176,
+                  "total_size": "108 GB"
+                },
+                {
+                  "schemaname": "sys",
+                  "table_name": "edb$stat_all_indexes",
+                  "total_bytes": 115880132608,
+                  "table_bytes": 98489286656,
+                  "indexes_bytes": 17366622208,
+                  "total_size": "108 GB"
+                },
+                {
+                  "schemaname": "sys",
+                  "table_name": "edb$statio_all_tables",
+                  "total_bytes": 79203237888,
+                  "table_bytes": 67755687936,
+                  "indexes_bytes": 11430879232,
+                  "total_size": "74 GB"
+                },
+                {
+                  "schemaname": "sys",
+                  "table_name": "edb$stat_all_tables",
+                  "total_bytes": 76877127680,
+                  "table_bytes": 65439522816,
+                  "indexes_bytes": 11421499392,
+                  "total_size": "72 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_26_bk",
+                  "table_name": "data_element_column_map_prm",
+                  "total_bytes": 60430860288,
+                  "table_bytes": 28577480704,
+                  "indexes_bytes": 31846326272,
+                  "total_size": "56 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_25_bk",
+                  "table_name": "data_element_column_map_prm",
+                  "total_bytes": 60131999744,
+                  "table_bytes": 28436152320,
+                  "indexes_bytes": 31688826880,
+                  "total_size": "56 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_24_bk",
+                  "table_name": "data_element_column_map_prm",
+                  "total_bytes": 59990097920,
+                  "table_bytes": 28369043456,
+                  "indexes_bytes": 31614050304,
+                  "total_size": "56 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_23_2_bk",
+                  "table_name": "data_element_column_map_prm",
+                  "total_bytes": 59885633536,
+                  "table_bytes": 28319645696,
+                  "indexes_bytes": 31559000064,
+                  "total_size": "56 GB"
+                }
+              ],
+              "largest_indexes": [
+                {
+                  "schemaname": "sys",
+                  "index_name": "edb$statio_idx_pk",
+                  "table_name": "sys.edb$statio_all_indexes",
+                  "index_bytes": 16834125824,
+                  "index_size": "16 GB"
+                },
+                {
+                  "schemaname": "sys",
+                  "index_name": "edb$stat_idx_pk",
+                  "table_name": "sys.edb$stat_all_indexes",
+                  "index_bytes": 16831594496,
+                  "index_size": "16 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_26_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_26_bk.data_element_column_map_prm",
+                  "index_bytes": 15267880960,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_25_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_25_bk.data_element_column_map_prm",
+                  "index_bytes": 15192375296,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_24_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_24_bk.data_element_column_map_prm",
+                  "index_bytes": 15156527104,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_23_2_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_23_2_bk.data_element_column_map_prm",
+                  "index_bytes": 15130132480,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_20_2_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_20_2_bk.data_element_column_map_prm",
+                  "index_bytes": 15054979072,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_20_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_20_bk.data_element_column_map_prm",
+                  "index_bytes": 15054979072,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_17_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_17_bk.data_element_column_map_prm",
+                  "index_bytes": 14991294464,
+                  "index_size": "14 GB"
+                },
+                {
+                  "schemaname": "mms_prod_2025_16_bk",
+                  "index_name": "decm_idx",
+                  "table_name": "mms_prod_2025_16_bk.data_element_column_map_prm",
+                  "index_bytes": 14991294464,
+                  "index_size": "14 GB"
+                }
+              ]
+            },
+            "replication": {
+              "is_in_recovery": "f",
+              "connected_replicas": 0,
+              "replication_status": [],
+              "replication_slots": []
+            },
+            "backup": {
+              "archive_mode": "on",
+              "last_failed_archive": null
+            },
+            "bloat": {
+              "top_bloated_tables": [
+                {
+                  "table_name": "claritas_dev_test.t_gis_mikey_addr_0118",
+                  "bloat_size_bytes": 28051529728,
+                  "bloat_ratio": 100
+                },
+                {
+                  "table_name": "mms_prod_2024_24_bk.data_element_column_map_prm",
+                  "bloat_size_bytes": 26289528832,
+                  "bloat_ratio": 100
+                },
+                {
+                  "table_name": "claritas_dev_test.t_gis_mikey_addr_0118_1",
+                  "bloat_size_bytes": 23146430464,
+                  "bloat_ratio": 100
+                },
+                {
+                  "table_name": "testcompleteinsights10181706.sms_analysis_area",
+                  "bloat_size_bytes": 22867836928,
+                  "bloat_ratio": 100
+                },
+                {
+                  "table_name": "csdx2024.csdx_fy_totals",
+                  "bloat_size_bytes": 19817005056,
+                  "bloat_ratio": 100
+                }
+              ],
+              "large_indexes": []
+            },
+            "configuration": {
+              "settings": {
+                "autovacuum": "on",
+                "autovacuum_max_workers": "6",
+                "autovacuum_naptime": "300",
+                "checkpoint_completion_target": "0.9",
+                "effective_cache_size": "12378496",
+                "log_connections": "on",
+                "log_disconnections": "on",
+                "log_statement": "mod",
+                "maintenance_work_mem": "262144",
+                "max_connections": "600",
+                "max_wal_size": "128",
+                "password_encryption": "on",
+                "port": "5444",
+                "shared_buffers": "1048576",
+                "ssl": "off",
+                "temp_buffers": "1024",
+                "temp_file_limit": "-1",
+                "temp_tablespaces": "",
+                "wal_level": "logical",
+                "work_mem": "1043456"
+              }
+            },
+            "meta": {
+              "version": "1.1"
+            }
+          },
+          "webhookUrl": "https://claritasllc.app.n8n.cloud/webhook/edb-health-check",
+          "executionMode": "production",
+          "jwtPayload": {
+            "sub": "edb-monitor",
+            "name": "Health Check Service for EDB",
+            "role": "service",
+            "service_id": "monitor-edb-as-9.6",
+            "server_name": "smsdevdba01",
+            "timestamp": "2025-12-30T05:20:48Z",
+            "iat": 1767072081,
+            "exp": 1767072381
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "If Issues Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Issues Found": {
+      "main": [
+        [
+          {
+            "node": "Call 'Create Jira Ticket'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Action1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store Save",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Postgres PGVector Store Save",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store Save": {
+      "main": [
+        []
+      ]
+    },
+    "Knowledge Base Retriever tool": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store Retrieve",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store Retrieve": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Task Breakdown": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Create Jira Ticket'": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Parse Metric Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Metric Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres PGVector Store Save",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "91d31ff6-882c-4fe8-8988-cb88fd754432",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "506d52014ca7191c4e55369401e3d9bc4b613f6675bc608609ca5972bfe8aa2f"
+  },
+  "id": "Vz0C1Lk8zhbULLar",
+  "tags": []
+}
