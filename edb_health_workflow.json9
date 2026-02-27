@@ -13,18 +13,17 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        7504,
-        1176
+        4816,
+        1744
       ],
-      "id": "cdcceea2-67c4-446a-97d5-0359d1d15ce8",
+      "id": "1cdec4a8-70b4-4854-8498-0fb1718aa588",
       "webhookId": "3e56929e-dbe0-4d36-88f2-30a124aa3850",
       "credentials": {
         "jwtAuth": {
           "id": "mISNzbB1PGqLkhF9",
           "name": "JWT Auth account 3"
         }
-      },
-      "onError": "continueRegularOutput"
+      }
     },
     {
       "parameters": {
@@ -54,10 +53,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        11024,
-        1352
+        8320,
+        992
       ],
-      "id": "e914dcba-2431-42c3-b6d2-542a64a965c1",
+      "id": "5c2b2dac-a33e-436a-bf00-8758b28a254b",
       "onError": "continueErrorOutput"
     },
     {
@@ -114,10 +113,10 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        11248,
-        1560
+        8544,
+        1504
       ],
-      "id": "d7ba47f1-b57d-4826-a0e2-3927292bafd5",
+      "id": "6ed514e8-2108-44d0-b36b-d8c0b6a9496c",
       "name": "Call 'Create Jira Ticket'"
     },
     {
@@ -126,10 +125,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        11248,
-        1176
+        8544,
+        912
       ],
-      "id": "daada364-482d-4699-b5d1-39ae604db83f"
+      "id": "2b136973-b987-4efe-b951-cd6c8261a3c6"
     },
     {
       "parameters": {
@@ -138,10 +137,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1280
+        5616,
+        1008
       ],
-      "id": "0a240dae-d0cd-463e-995c-01fe8ef2ded8",
+      "id": "56684d4a-8dfa-4a5c-881e-46e989b80902",
       "name": "System Health Splitter"
     },
     {
@@ -151,10 +150,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        792
+        5616,
+        624
       ],
-      "id": "6b99f6f1-efe0-4f39-9ebf-6625778d808c",
+      "id": "b2745539-04e0-4c4f-8dd1-d9e26db724a0",
       "name": "DB Performance Splitter"
     },
     {
@@ -164,10 +163,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1088
+        5616,
+        816
       ],
-      "id": "e2a3423b-0339-46c5-a6ce-14f0a2a828ff",
+      "id": "9f0eda65-0750-4c86-9935-f223e976d337",
       "name": "Backup Recovery Splitter"
     },
     {
@@ -177,10 +176,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1472
+        5616,
+        1312
       ],
-      "id": "a88baba3-6042-4354-8722-c898624eace6",
+      "id": "13cdac6c-e1d3-4a4b-8ba6-67623725a9a4",
       "name": "Security Compliance Splitter"
     },
     {
@@ -190,10 +189,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1664
+        5616,
+        1600
       ],
-      "id": "14291fc0-1764-4321-bc09-184e65e926d0",
+      "id": "fe16ab24-933b-43c3-abb4-2632f88c4957",
       "name": "Storage Capacity Splitter"
     },
     {
@@ -207,10 +206,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1280
+        5904,
+        1008
       ],
-      "id": "feb9ca49-1de9-4bd2-ac65-6f131c5c2c1c",
+      "id": "ecb29c17-12ac-488a-a3ac-d0880ba202bc",
       "name": "System Health Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -226,10 +225,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        688
+        5904,
+        624
       ],
-      "id": "7e39c84b-f0aa-476d-b12f-548cd6cc3a38",
+      "id": "8f63edd4-5d02-4208-b70e-113c1ab6f03c",
       "name": "DB Performance Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -245,10 +244,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1088
+        5904,
+        816
       ],
-      "id": "1a799c53-02ea-48dc-a05f-5f3b01e290e3",
+      "id": "38f501f0-617a-4206-bff8-04f61bb15ae1",
       "name": "Backup Recovery Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -264,10 +263,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1472
+        5904,
+        1200
       ],
-      "id": "894ac473-4d15-49bf-8abd-0f7c968ac66c",
+      "id": "89c25869-d614-4275-b7b4-9d1033fa1f46",
       "name": "Security Compliance Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -275,35 +274,34 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Role: You are an expert data analyst specializing in PostgreSQL monitoring and performance optimization.\n\nInput: Analyze the provided SQL Server monitoring data, which includes a summary of server metrics and detailed metrics.  Metrics are seen below:\n\n**Server Info:**\n- Server: {{ $json.server }}\n- Timestamp: {{ $json.timestamp }}\n\n**Consolidation Summary:**\n- Total Issues Found: {{ $json.total_issues }}\n- Issues by Category: {{ JSON.stringify($json.issues_by_category, null, 2) }}\n\n**All Issues (Consolidated & Deduplicated):**\n{{ JSON.stringify($json.issues, null, 2) }}\n\nSteps:\n1. Based on the real-time metrics, formulate a question to search for relevant historical context or best practices using your available tool.\n2. **Use the Knowledge Base Retriever tool** to find relevant information.\n3. Synthesize the real-time metrics with the retrieved historical context.\n4. Identify performance bottlenecks and their root causes.\n5. Assess security risks and compliance issues based on the data.\n6. Evaluate backup and recovery readiness.\n7. Prioritize issues according to their business impact (Critical, High, Medium, Low).\n8. Enumerate all issues identified and important information about each issue. Make a list of issues and format the list using the format_final_json_response tool.\n9. For each issue identified, provide title, priority, brief description, Remediation Steps, and preventative actions\n10. Remove duplicate issues\n\nExpectation: Use format_final_json_response tool to format the output. As an output, produce a list of all issues derived from input metrics after analysis.  Each issue on the list should have a unique title, derived priority, a brief issue description, identified remediation steps to resolve the identified issue, and realistic preventive actions to avoid issue recurrence.",
+        "text": "=Role: You are a Senior Database Architect and Analysis Coordinator specializing in PostgreSQL comprehensive health assessment.\n\nInput: Analyze the consolidated findings from all specialized sub-agents for PostgreSQL/EnterpriseDB Advanced Server 9.6.\n\n**Server Info:**\n- Server: {{ $json.server }}\n- Timestamp: {{ $json.timestamp }}\n\n**Consolidation Summary:**\n- Total Issues Found: {{ $json.total_issues }}\n- Issues by Category: {{ JSON.stringify($json.issues_by_category, null, 2) }}\n\n**All Issues (Consolidated & Deduplicated):**\n{{ JSON.stringify($json.issues, null, 2) }}\n\n**Analysis Requirements:**\n1. Synthesize findings from all specialized sub-agents (System Health, Database Performance, Backup & Recovery, Security & Compliance, Storage & Capacity)\n2. Identify cross-category dependencies and related issues\n3. Re-prioritize issues based on overall business impact and interdependencies\n4. Consolidate remediation strategies to avoid conflicting recommendations\n5. Generate comprehensive monitoring and preventive strategy\n6. Focus on actionable insights for database administrators\n\n**Output Format:**\nProvide a comprehensive analysis with:\n- Executive summary of overall database health\n- Prioritized list of all issues (Critical → High → Medium → Low)\n- Consolidated remediation steps that address multiple issues efficiently\n- Preventive monitoring and maintenance recommendations\n- Long-term optimization strategy\n\n**Priority Guidelines:**\n- Critical: Immediate action required, potential data loss or service outage\n- High: Significant performance impact or security risk, address within 24-48 hours\n- Medium: Important optimization opportunities, address within 1-2 weeks\n- Low: Best practice improvements, address during maintenance windows\n\nExpectation: Use the format_final_json_response tool to output a final consolidated list of prioritized issues with comprehensive remediation strategy.",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a Postgres Database Administrator and Performance Analyst with expertise in:\n- Postgres performance tuning and optimization\n- Database security and compliance\n- Backup and disaster recovery planning\n- Proactive monitoring and alerting\n- Risk assessment and mitigation\n\nAnalyze the provided metrics data and generate actionable insights. Your analysis should be:\n- Technically accurate and specific\n- Prioritized by business impact\n- Include concrete remediation steps\n- Consider both immediate fixes and long-term improvements\n- Focus on preventive measures\n\nStructure your response to facilitate creation of prioritized Jira tasks."
+          "systemMessage": "You are a Senior Database Architect with comprehensive expertise in:\n- PostgreSQL enterprise architecture and design\n- Cross-domain performance optimization\n- Security and compliance integration\n- Disaster recovery and business continuity\n- Capacity planning and scalability\n- Database lifecycle management\n\nSynthesize specialized analyses into cohesive strategy focused on:\n- Holistic database health assessment\n- Multi-domain issue correlation and prioritization\n- Efficient remediation planning\n- Comprehensive monitoring strategy\n- Long-term optimization roadmap\n\nStructure your response to facilitate creation of prioritized Jira tasks with clear business justification and implementation roadmap."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        9824,
-        1368
+        7120,
+        1008
       ],
-      "id": "7fadd121-ac0e-4a88-87c5-e8da6a1552cd",
+      "id": "ecc469eb-b8f4-4e77-82ce-8df6f803ff17",
       "name": "Consolidation AI Agent",
-      "executeOnce": false,
-      "retryOnFail": false,
-      "disabled": true
+      "executeOnce": true,
+      "retryOnFail": false
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst serverName = input.server ?? input.server_name ?? 'Unknown';\nconst issues = Array.isArray(input.issues) ? input.issues : [];\n\nconst priorityMap = { Critical: 1, High: 2, Medium: 3, Low: 4 };\n\nfunction toLabelParts(text) {\n  return String(text || '')\n    .toLowerCase()\n    .split(/\\s+/)\n    .map(t => t.replace(/[^a-z0-9]/g, ''))\n    .filter(Boolean)\n    .slice(0, 10);\n}\n\nconst jiraTasks = [];\n\nfor (const issue of issues) {\n  const category = issue.category ?? 'General';\n  const title = issue.title ?? 'Issue';\n  const descriptionText = issue.description ?? '';\n\n  const priorityStr = String(issue.priority ?? 'Medium');\n  const numericPriority = priorityMap[priorityStr] ?? 3;\n\n  if (numericPriority > 2) continue;\n\n  const description = [\n    'Description',\n    descriptionText || 'No description provided.',\n    '',\n    'Immediate Remediation Steps',\n    ' Investigate and remediate: ' + title,\n    ' Validate service impact and confirm recovery for ' + serverName + '.',\n    '',\n    'Preventative Actions and Proactive Monitoring Improvements',\n    ' Add alerting/monitoring for recurrence of: ' + title + '.',\n    ' Track category ' + category + ' health indicators on dashboards.'\n  ].join(String.fromCharCode(10));\n\n  jiraTasks.push({\n    json: {\n      status: 'NOT_OK',\n      summary: '[' + category + '] ' + title,\n      description,\n      priority: numericPriority,\n      labels: Array.from(new Set([ ...toLabelParts(serverName), ...toLabelParts(category), ...toLabelParts(title) ]))\n    }\n  });\n}\n\nif (jiraTasks.length === 0) {\n  return [{ json: { status: 'OK' } }];\n}\n\nreturn jiraTasks;\n"
+        "jsCode": "const jiraTasks = [];\nconst inputItems = $input.all();\n\nfor (const item of inputItems) {\n    if (item.json.output && Array.isArray(item.json.output)) {\n        for (const issue of item.json.output) {\n            const description = [\n                `Description`,\n                issue.Description || 'No description provided.',\n                ``,\n                `Immediate Remediation Steps`\n            ].concat(issue['Immediate remediation steps'] || ['No immediate remediation steps provided.']).map(step => ` ${step}`)\n            .concat([\n                ``,\n                `Preventative Actions and Proactive Monitoring Improvements`\n            ])\n            .concat(issue['Preventative actions and proactive monitoring improvements'] || ['No preventative actions provided.']).map(action => ` ${action}`)\n            .join(String.fromCharCode(10));\n\n            // Map priority: Critical=1, High=2, Medium=3\n            const priStr = (issue.Priority || 'Medium').toLowerCase();\n            const priorityMap = { critical: 1, high: 2, medium: 3 };\n            const numericPriority = priorityMap[priStr] ?? 3;\n\n            // Only create Jira tasks for priority 1 (Critical) and 2 (High)\n            if (numericPriority <= 3) {\n                const task = {\n                    summary: issue.Issue || 'No summary provided.',\n                    description: description,\n                    priority: numericPriority,\n                    labels: (issue.Issue || '').toLowerCase().split(' ').map(l => l.replace(/[^a-z0-9]/g, ''))\n                };\n                jiraTasks.push({ json: task });\n            }\n            // Else: skip Medium (3) and lower priorities\n        }\n    }\n}\n\nreturn jiraTasks;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        10576,
-        1368
+        7872,
+        1008
       ],
-      "id": "72668626-c1e4-4cdd-a38f-3f70ca86c095",
+      "id": "5370f336-9400-499b-91df-fcfd626b632f",
       "name": "Code in JavaScript"
     },
     {
@@ -314,10 +312,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        7960,
-        1008
+        5280,
+        2224
       ],
-      "id": "03246aee-df9a-49ed-bc34-14ac8cd0af6a",
+      "id": "01458f02-aed6-4e00-afcd-eaa537eb0826",
       "name": "Embeddings OpenAI1",
       "credentials": {
         "openAiApi": {
@@ -333,10 +331,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        8088,
-        1008
+        5408,
+        2224
       ],
-      "id": "3a32a953-63e5-4136-b8fd-258938f1c223",
+      "id": "b9c65c81-a584-4799-96e5-2e3a1c728bcd",
       "name": "Default Data Loader"
     },
     {
@@ -347,17 +345,18 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
-        7952,
-        784
+        5264,
+        2000
       ],
-      "id": "8079dcf9-7844-4989-8212-6c3e61e46644",
+      "id": "79084ef9-b14b-40b3-a143-f5d951ba8ff5",
       "name": "Postgres PGVector Store Save",
       "credentials": {
         "postgres": {
           "id": "u2CnfCollVH1WfsI",
           "name": "PG Vector Store"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -367,10 +366,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        10000,
-        1800
+        7296,
+        1440
       ],
-      "id": "ebad5d2e-8aac-40e6-9efd-dd7c697c6a30",
+      "id": "f632a1a9-6d38-4955-aad8-2e20643a636e",
       "name": "Knowledge Base Retriever tool",
       "credentials": {
         "openAiApi": {
@@ -388,10 +387,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
-        9920,
-        1592
+        7216,
+        1232
       ],
-      "id": "e895ef28-13ca-4d9f-a874-8072bfe2f9ef",
+      "id": "9459c244-326f-48f1-ae5d-290bced97185",
       "name": "Postgres PGVector Store Retrieve",
       "credentials": {
         "postgres": {
@@ -408,20 +407,20 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        11472,
-        1544
+        8768,
+        1312
       ],
-      "id": "d497f447-8c1f-44c3-8e39-89da495e3cf0",
+      "id": "730d12fa-d763-4d4d-a03d-2bb66bcd5ce4",
       "name": "Respond to Webhook"
     },
     {
       "parameters": {
         "conditions": {
           "options": {
-            "version": 3,
-            "leftValue": "",
             "caseSensitive": true,
-            "typeValidation": "strict"
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
           },
           "conditions": [
             {
@@ -434,35 +433,31 @@
               }
             }
           ],
-          "combinator": "and",
-          "conditions[0]": {
-            "leftValue": "={{ $json.jwtPayload.name }}",
-            "rightValue": "=Health Check Service for EDB"
-          }
+          "combinator": "and"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        7728,
-        1160
+        5040,
+        1728
       ],
-      "id": "717b0e6e-ae88-49b4-980c-11fe9d52e834",
+      "id": "946b7907-ef1b-46a4-9b3b-2f482aba4064",
       "name": "If",
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first();\nconst inputData = item.json ?? item;\n\nconst envelope = inputData;\n\nfunction bytesToHuman(bytes) {\n  const value = Number(bytes);\n  if (!Number.isFinite(value)) return { value: null };\n\n  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];\n  let unitIndex = 0;\n  let n = value;\n\n  while (n >= 1024 && unitIndex < units.length - 1) {\n    n /= 1024;\n    unitIndex += 1;\n  }\n\n  const rounded = unitIndex === 0 ? n.toFixed(0) : n.toFixed(2);\n  return { value: rounded + ' ' + units[unitIndex] };\n}\n\nfunction pickMetricsBody(env) {\n  let selected = env;\n  if (env && env.body && env.body.body && env.body.body.data && env.body.body.data.data) selected = env.body.body.data.data;\n  else if (env && env.body && env.body.data && env.body.data.data) selected = env.body.data.data;\n  else if (env && env.body && env.body.data) selected = env.body.data;\n  else if (env && env.body) selected = env.body;\n  else if (env && env.data) selected = env.data;\n\n  return { value: selected };\n}\n\nlet metricsBody = pickMetricsBody(envelope).value;\nif (metricsBody && metricsBody.data && typeof metricsBody.data === 'object') metricsBody = metricsBody.data;\n\nconst jwtPayload = (envelope && envelope.jwtPayload) ? envelope.jwtPayload : (metricsBody ? metricsBody.jwtPayload : null);\nconst serverName = (jwtPayload && (jwtPayload.server_name || jwtPayload.server_ip)) || (metricsBody && (metricsBody.hostname || metricsBody.server_name || metricsBody.server)) || 'Unknown';\nconst timestamp = (metricsBody && metricsBody.timestamp) || (jwtPayload && jwtPayload.timestamp) || null;\n\nconst system = (metricsBody && metricsBody.system) || {};\nconst memory = system.memory_mb || {};\nconst totalMem = Number(memory.total);\nconst usedMem = Number(memory.used);\nconst memUsedPct = Number.isFinite(totalMem) && totalMem > 0 && Number.isFinite(usedMem) ? (usedMem / totalMem) * 100 : null;\n\nconst performance = (metricsBody && metricsBody.performance) || {};\nconst databaseStatus = (metricsBody && metricsBody.database_status) || {};\nconst locks = (metricsBody && metricsBody.locks) || {};\nconst replication = (metricsBody && metricsBody.replication) || {};\nconst backup = (metricsBody && metricsBody.backup) || {};\n\nconst storage = (metricsBody && metricsBody.storage) || {};\nconst databaseSizeBytes = storage.database_size && storage.database_size.database_size_bytes ? storage.database_size.database_size_bytes : null;\nconst tempTotalBytes = storage.temp_objects && storage.temp_objects.temp_objects_total_bytes ? storage.temp_objects.temp_objects_total_bytes : null;\nconst tempObjectsCount = storage.temp_objects && storage.temp_objects.temp_objects_count ? storage.temp_objects.temp_objects_count : null;\n\nconst largestTables = Array.isArray(storage.largest_tables) ? storage.largest_tables : [];\nconst largestIndexes = Array.isArray(storage.largest_indexes) ? storage.largest_indexes : [];\n\nconst storageSummary = {\n  database_size_bytes: databaseSizeBytes,\n  database_size_human: (storage.database_size && storage.database_size.database_size) ? storage.database_size.database_size : bytesToHuman(databaseSizeBytes).value,\n  temp_objects_total_bytes: tempTotalBytes,\n  temp_objects_total_human: (storage.temp_objects && storage.temp_objects.temp_objects_total_size) ? storage.temp_objects.temp_objects_total_size : bytesToHuman(tempTotalBytes).value,\n  temp_objects_count: tempObjectsCount,\n  largest_tables_top: largestTables.slice(0, 10).map(t => ({\n    name: (t && t.schemaname && t.table_name) ? (t.schemaname + '.' + t.table_name) : ((t && t.table_name) ? t.table_name : 'Unknown'),\n    total_bytes: t ? t.total_bytes : null,\n    total_size: (t && t.total_size) ? t.total_size : bytesToHuman(t ? t.total_bytes : null).value\n  })),\n  largest_indexes_top: largestIndexes.slice(0, 10).map(i => ({\n    name: (i && i.schemaname && i.index_name) ? (i.schemaname + '.' + i.index_name) : ((i && i.index_name) ? i.index_name : 'Unknown'),\n    table_name: i ? i.table_name : null,\n    index_bytes: i ? i.index_bytes : null,\n    index_size: (i && i.index_size) ? i.index_size : bytesToHuman(i ? i.index_bytes : null).value\n  }))\n};\n\nconst summary = {\n  server: serverName,\n  timestamp: timestamp,\n  service_status: databaseStatus.service_status || null,\n  connection_status: databaseStatus.connection_status || null,\n  disk_usage_percent: system.disk_usage_percent || null,\n  load_avg_1min: (system.load_avg && system.load_avg['1min']) ? system.load_avg['1min'] : null,\n  memory_used_percent: memUsedPct === null ? null : Number(memUsedPct.toFixed(2)),\n  total_connections: performance.total_connections || null,\n  active_connections: performance.active_connections || null,\n  long_running_queries_count: performance.long_running_queries_count || null,\n  cache_hit_ratio: performance.cache_hit_ratio || null,\n  waiting_sessions: locks.waiting_sessions || null,\n  deadlocks: metricsBody && metricsBody.database && metricsBody.database.stats ? metricsBody.database.stats.deadlocks : null,\n  connected_replicas: replication.connected_replicas || null,\n  archive_mode: backup.archive_mode || null\n};\n\nconst alerts = [];\nif (databaseStatus.service_status && String(databaseStatus.service_status).toLowerCase() !== 'active') {\n  alerts.push({ severity: 'critical', code: 'service_not_active', message: 'Database service is not active', value: databaseStatus.service_status });\n}\nif (databaseStatus.connection_status && String(databaseStatus.connection_status).toLowerCase() !== 'success') {\n  alerts.push({ severity: 'critical', code: 'connection_failed', message: 'Database connection did not succeed', value: databaseStatus.connection_status });\n}\nconst diskUsage = Number(system.disk_usage_percent);\nif (Number.isFinite(diskUsage) && diskUsage >= 90) {\n  alerts.push({ severity: 'critical', code: 'disk_usage_high', message: 'Disk usage is >= 90%', value: diskUsage });\n} else if (Number.isFinite(diskUsage) && diskUsage >= 80) {\n  alerts.push({ severity: 'warning', code: 'disk_usage_elevated', message: 'Disk usage is >= 80%', value: diskUsage });\n}\n\nconst normalizedBody = Object.assign({}, metricsBody, {\n  summary: summary,\n  storage_summary: storageSummary,\n  alerts: alerts\n});\n\nconst output = Object.assign({}, envelope, {\n  body: normalizedBody,\n  jwtPayload: jwtPayload || (envelope ? envelope.jwtPayload : null)\n});\n\nreturn [{ json: output }];\n"
+        "jsCode": "const item = $input.first();\nconst inputData = item.json ?? item;\n\nconst envelope = inputData;\n\nfunction bytesToHuman(bytes) {\n  const value = Number(bytes);\n  if (!Number.isFinite(value)) return null;\n  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];\n  let unitIndex = 0;\n  let n = value;\n  while (n >= 1024 && unitIndex < units.length - 1) {\n    n /= 1024;\n    unitIndex += 1;\n  }\n  const rounded = unitIndex === 0 ? n.toFixed(0) : n.toFixed(2);\n  return `${rounded} ${units[unitIndex]}`;\n}\n\nfunction pickMetricsBody(env) {\n  if (env?.body?.body?.data?.data) return env.body.body.data.data;\n  if (env?.body?.data?.data) return env.body.data.data;\n  if (env?.body?.data) return env.body.data;\n  if (env?.body) return env.body;\n  if (env?.data) return env.data;\n  return env;\n}\n\nlet metricsBody = pickMetricsBody(envelope);\nif (metricsBody?.data && typeof metricsBody.data === 'object') metricsBody = metricsBody.data;\n\nconst jwtPayload = envelope.jwtPayload ?? metricsBody?.jwtPayload ?? null;\nconst serverName = jwtPayload?.server_name ?? jwtPayload?.server_ip ?? metricsBody?.hostname ?? metricsBody?.server_name ?? metricsBody?.server ?? 'Unknown';\nconst timestamp = metricsBody?.timestamp ?? jwtPayload?.timestamp ?? null;\n\nconst system = metricsBody?.system ?? {};\nconst memory = system?.memory_mb ?? {};\nconst totalMem = Number(memory.total);\nconst usedMem = Number(memory.used);\nconst memUsedPct = Number.isFinite(totalMem) && totalMem > 0 && Number.isFinite(usedMem) ? (usedMem / totalMem) * 100 : null;\n\nconst performance = metricsBody?.performance ?? {};\nconst databaseStatus = metricsBody?.database_status ?? {};\nconst locks = metricsBody?.locks ?? {};\nconst replication = metricsBody?.replication ?? {};\nconst backup = metricsBody?.backup ?? {};\n\nconst storage = metricsBody?.storage ?? {};\nconst databaseSizeBytes = storage?.database_size?.database_size_bytes ?? null;\nconst tempTotalBytes = storage?.temp_objects?.temp_objects_total_bytes ?? null;\nconst tempObjectsCount = storage?.temp_objects?.temp_objects_count ?? null;\n\nconst largestTables = Array.isArray(storage?.largest_tables) ? storage.largest_tables : [];\nconst largestIndexes = Array.isArray(storage?.largest_indexes) ? storage.largest_indexes : [];\n\nconst storageSummary = {\n  database_size_bytes: databaseSizeBytes,\n  database_size_human: storage?.database_size?.database_size ?? bytesToHuman(databaseSizeBytes),\n  temp_objects_total_bytes: tempTotalBytes,\n  temp_objects_total_human: storage?.temp_objects?.temp_objects_total_size ?? bytesToHuman(tempTotalBytes),\n  temp_objects_count: tempObjectsCount,\n  largest_tables_top: largestTables.slice(0, 10).map(t => ({\n    name: t?.schemaname && t?.table_name ? `${t.schemaname}.${t.table_name}` : (t?.table_name ?? 'Unknown'),\n    total_bytes: t?.total_bytes ?? null,\n    total_size: t?.total_size ?? bytesToHuman(t?.total_bytes)\n  })),\n  largest_indexes_top: largestIndexes.slice(0, 10).map(i => ({\n    name: i?.schemaname && i?.index_name ? `${i.schemaname}.${i.index_name}` : (i?.index_name ?? 'Unknown'),\n    table_name: i?.table_name ?? null,\n    index_bytes: i?.index_bytes ?? null,\n    index_size: i?.index_size ?? bytesToHuman(i?.index_bytes)\n  }))\n};\n\nconst summary = {\n  server: serverName,\n  timestamp,\n  service_status: databaseStatus?.service_status ?? null,\n  connection_status: databaseStatus?.connection_status ?? null,\n  disk_usage_percent: system?.disk_usage_percent ?? null,\n  load_avg_1min: system?.load_avg?.['1min'] ?? null,\n  memory_used_percent: memUsedPct === null ? null : Number(memUsedPct.toFixed(2)),\n  total_connections: performance?.total_connections ?? null,\n  active_connections: performance?.active_connections ?? null,\n  long_running_queries_count: performance?.long_running_queries_count ?? null,\n  cache_hit_ratio: performance?.cache_hit_ratio ?? null,\n  waiting_sessions: locks?.waiting_sessions ?? null,\n  deadlocks: metricsBody?.database?.stats?.deadlocks ?? null,\n  connected_replicas: replication?.connected_replicas ?? null,\n  archive_mode: backup?.archive_mode ?? null\n};\n\nconst alerts = [];\nif (databaseStatus?.service_status && String(databaseStatus.service_status).toLowerCase() !== 'active') {\n  alerts.push({ severity: 'critical', code: 'service_not_active', message: 'Database service is not active', value: databaseStatus.service_status });\n}\nif (databaseStatus?.connection_status && String(databaseStatus.connection_status).toLowerCase() !== 'success') {\n  alerts.push({ severity: 'critical', code: 'connection_failed', message: 'Database connection did not succeed', value: databaseStatus.connection_status });\n}\nconst diskUsage = Number(system?.disk_usage_percent);\nif (Number.isFinite(diskUsage) && diskUsage >= 90) {\n  alerts.push({ severity: 'critical', code: 'disk_usage_high', message: 'Disk usage is >= 90%', value: diskUsage });\n} else if (Number.isFinite(diskUsage) && diskUsage >= 80) {\n  alerts.push({ severity: 'warning', code: 'disk_usage_elevated', message: 'Disk usage is >= 80%', value: diskUsage });\n}\n\nconst normalizedBody = {\n  ...metricsBody,\n  summary,\n  storage_summary: storageSummary,\n  alerts\n};\n\nconst output = {\n  ...envelope,\n  body: normalizedBody,\n  jwtPayload: jwtPayload ?? envelope.jwtPayload\n};\n\nreturn [{ json: output }];\n"
       },
-      "id": "8f151d0b-e5d2-475e-a7fd-606273134ec4",
+      "id": "c9a58bc5-a071-462a-9cc8-595af229c27f",
       "name": "Parse Metric Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8016,
-        1184
+        5328,
+        912
       ]
     },
     {
@@ -483,32 +478,30 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        10800,
-        1368
+        8096,
+        1008
       ],
-      "id": "51929247-3ed2-418e-8d6b-5541621b86a3",
+      "id": "c8815e47-9c7f-43a6-8e9e-baa590491e7a",
       "name": "Edit Fields"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-4.1-nano",
+          "value": "gpt-5-nano",
           "mode": "list",
-          "cachedResultName": "gpt-4.1-nano"
+          "cachedResultName": "gpt-5-nano"
         },
-        "builtInTools": {
-          "codeInterpreter": false
-        },
+        "builtInTools": {},
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        9664,
-        1592
+        6960,
+        1232
       ],
-      "id": "130efe71-e13e-4ec4-ac5f-c494398f09e3",
+      "id": "4b0dbe64-5327-420e-938f-4c4adb2838e4",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -525,10 +518,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        8656,
-        912
+        5968,
+        1424
       ],
-      "id": "3856929a-45e3-413d-bdb3-f507cdaac8ef",
+      "id": "bcd50589-3ecc-4e2e-9699-403d93b7d849",
       "name": "Postgres Chat Memory1",
       "credentials": {
         "postgres": {
@@ -545,10 +538,10 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.2,
       "position": [
-        8784,
-        912
+        6096,
+        1424
       ],
-      "id": "cb437468-fb5e-4a50-8c9b-ce147061cea0",
+      "id": "c86fa7e5-f270-426c-b63c-d7b0c1953ecf",
       "name": "clearthought",
       "disabled": true
     },
@@ -561,10 +554,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        10208,
-        1592
+        7504,
+        1232
       ],
-      "id": "25a8374c-fa8f-432d-94b3-5f098a5b06e3",
+      "id": "fa4a0dae-4361-4589-ba9a-a6df4b6573f5",
       "name": "format_final_json_response"
     },
     {
@@ -581,10 +574,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        10288,
-        1800
+        7584,
+        1440
       ],
-      "id": "7b77f83b-05c1-448a-b603-6ca252b99af3",
+      "id": "2781aa18-a169-4015-9593-2ea0393a8995",
       "name": "OpenAI Chat Model2",
       "credentials": {
         "openAiApi": {
@@ -607,10 +600,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        8528,
-        912
+        5840,
+        1424
       ],
-      "id": "d43d8deb-bc93-47d6-97b4-3f1c47633a89",
+      "id": "47f2dad8-8779-4f61-b062-392803b67e31",
       "name": "OpenAI Chat Model1",
       "credentials": {
         "openAiApi": {
@@ -630,26 +623,26 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1664
+        5904,
+        1600
       ],
-      "id": "e4d3f298-424d-4422-a1b0-d714a6567428",
+      "id": "308a893b-b69f-4266-90a4-2fdfc2310079",
       "name": "Storage Capacity Agent",
-      "executeOnce": false,
+      "executeOnce": true,
       "retryOnFail": false
     },
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Webhook').item.json.jwtPayload?.timestamp ?? $('Webhook').item.json.body?.jwtPayload?.timestamp ?? $('Webhook').item.json.body?.timestamp }}"
+        "sessionKey": "={{ $('Webhook').item.json.jwtPayload.timestamp }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        9792,
-        1592
+        7120,
+        1360
       ],
-      "id": "27906f9f-4062-47ff-b416-3daf1e7b7c76",
+      "id": "bee17e02-4b13-45d6-accd-16c6120a94e5",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
@@ -665,44 +658,24 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        8992,
-        1320
+        6496,
+        928
       ],
-      "id": "0519c623-0679-49c7-91ed-a2c548cc9283",
+      "id": "aeda52bd-10a8-4425-8138-fcc8ef469b1e",
       "name": "Merge"
     },
     {
       "parameters": {
-        "jsCode": "function parseIssuesFromNodeJson(nodeJson) {\n  const raw = nodeJson?.issues ?? nodeJson?.output ?? nodeJson;\n\n  let parsed = raw;\n  if (typeof parsed === 'string') {\n    try {\n      parsed = JSON.parse(parsed);\n    } catch {\n      return [];\n    }\n  }\n\n  if (Array.isArray(parsed)) return parsed;\n  if (parsed && Array.isArray(parsed.issues)) return parsed.issues;\n  if (parsed && Array.isArray(parsed.output)) return parsed.output;\n\n  return [];\n}\n\nfunction toStringArray(value) {\n  if (!value) return [];\n  if (Array.isArray(value)) return value.map(v => String(v)).filter(Boolean);\n  if (typeof value === 'string') return [value].filter(Boolean);\n  return [];\n}\n\nfunction buildDescription(base, remediationSteps, preventativeSteps) {\n  const parts = [];\n\n  const baseText = String(base ?? '').trim();\n  if (baseText) parts.push(baseText);\n\n  if (remediationSteps.length) {\n    parts.push('');\n    parts.push('Immediate remediation steps');\n    for (const step of remediationSteps) parts.push('- ' + step);\n  }\n\n  if (preventativeSteps.length) {\n    parts.push('');\n    parts.push('Preventative actions and proactive monitoring improvements');\n    for (const step of preventativeSteps) parts.push('- ' + step);\n  }\n\n  return parts.join(String.fromCharCode(10)).trim();\n}\n\nfunction normalizeIssue(issue) {\n  const title = issue?.title ?? issue?.Issue ?? 'Untitled';\n  const priority = issue?.priority ?? issue?.Priority ?? 'Medium';\n\n  const baseDescription = issue?.description ?? issue?.Description ?? '';\n\n  const remediationSteps = [\n    ...toStringArray(issue?.remediation),\n    ...toStringArray(issue?.remediation_steps),\n    ...toStringArray(issue?.['Immediate remediation steps']),\n    ...toStringArray(issue?.immediate_remediation_steps)\n  ];\n\n  const preventativeSteps = [\n    ...toStringArray(issue?.monitoring),\n    ...toStringArray(issue?.preventative),\n    ...toStringArray(issue?.preventive),\n    ...toStringArray(issue?.['Preventative actions and proactive monitoring improvements']),\n    ...toStringArray(issue?.preventative_actions),\n    ...toStringArray(issue?.preventative_actions_and_proactive_monitoring_improvements)\n  ];\n\n  return {\n    title: String(title),\n    priority: String(priority),\n    description: buildDescription(baseDescription, remediationSteps, preventativeSteps)\n  };\n}\n\nconst metrics = $('Parse Metric Data').first().json;\nconst body = metrics.body ?? {};\nconst summary = body.summary ?? {};\n\nconst server = summary.server ?? body.hostname ?? body.server ?? 'Unknown';\nconst timestamp = summary.timestamp ?? body.timestamp ?? null;\n\nconst categorySources = [\n  { category: 'System Health', nodeJson: $('System Health Agent').first().json },\n  { category: 'Database Performance', nodeJson: $('DB Performance Agent').first().json },\n  { category: 'Backup & Recovery', nodeJson: $('Backup Recovery Agent').first().json },\n  { category: 'Security & Compliance', nodeJson: $('Security Compliance Agent').first().json },\n  { category: 'Storage & Capacity', nodeJson: $('Storage Capacity Agent').first().json }\n];\n\nconst issuesByCategory = {};\nconst allIssues = [];\n\nfor (const { category, nodeJson } of categorySources) {\n  const issues = parseIssuesFromNodeJson(nodeJson);\n  issuesByCategory[category] = issues.length;\n\n  for (const issue of issues) {\n    const normalized = normalizeIssue(issue);\n    allIssues.push({\n      category,\n      title: normalized.title,\n      priority: normalized.priority,\n      description: normalized.description\n    });\n  }\n}\n\nconst uniqueIssues = allIssues.filter((issue, index, self) => index === self.findIndex(i => i.title === issue.title && i.category === issue.category));\n\nconst priorityOrder = { Critical: 1, High: 2, Medium: 3, Low: 4 };\nconst sortedIssues = uniqueIssues.sort((a, b) => (priorityOrder[a.priority] || 5) - (priorityOrder[b.priority] || 5));\n\nreturn [{\n  json: {\n    server,\n    timestamp,\n    total_issues: sortedIssues.length,\n    issues_by_category: issuesByCategory,\n    issues: sortedIssues\n  }\n}];"
+        "jsCode": "// Consolidation Code - Aggregate all sub-agent outputs\nconst systemHealthIssues = $node['System Health Agent'].json?.issues ?? [];\nconst dbPerformanceIssues = $node['DB Performance Agent'].json?.issues ?? [];\nconst backupRecoveryIssues = $node['Backup Recovery Agent'].json?.issues ?? [];\nconst securityComplianceIssues = $node['Security Compliance Agent'].json?.issues ?? [];\nconst storageCapacityIssues = $node['Storage Capacity Agent'].json?.issues ?? [];\n\n// Get server info from any input (they all have the same server info)\nconst serverInfo = $input.first().json;\nconst server = serverInfo.server ?? 'Unknown';\nconst timestamp = serverInfo.timestamp;\n\n// Combine all issues\nconst allIssues = [\n  ...systemHealthIssues.map(issue => ({ ...issue, category: 'System Health' })),\n  ...dbPerformanceIssues.map(issue => ({ ...issue, category: 'Database Performance' })),\n  ...backupRecoveryIssues.map(issue => ({ ...issue, category: 'Backup & Recovery' })),\n  ...securityComplianceIssues.map(issue => ({ ...issue, category: 'Security & Compliance' })),\n  ...storageCapacityIssues.map(issue => ({ ...issue, category: 'Storage & Capacity' }))\n];\n\n// Remove duplicates based on title\nconst uniqueIssues = allIssues.filter((issue, index, self) => \n  index === self.findIndex(i => i.title === issue.title)\n);\n\n// Sort by priority (Critical first, then High, Medium, Low)\nconst priorityOrder = { 'Critical': 1, 'High': 2, 'Medium': 3, 'Low': 4 };\nconst sortedIssues = uniqueIssues.sort((a, b) => \n  (priorityOrder[a.priority] || 5) - (priorityOrder[b.priority] || 5)\n);\n\nconst consolidationData = {\n  server,\n  timestamp,\n  total_issues: sortedIssues.length,\n  issues_by_category: {\n    'System Health': systemHealthIssues.length,\n    'Database Performance': dbPerformanceIssues.length,\n    'Backup & Recovery': backupRecoveryIssues.length,\n    'Security & Compliance': securityComplianceIssues.length,\n    'Storage & Capacity': storageCapacityIssues.length\n  },\n  issues: sortedIssues\n};\n\nreturn [{ json: consolidationData }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        9440,
-        1368
+        6752,
+        960
       ],
-      "id": "d6a6b6b2-e543-4e6b-8561-1c6af9db778c",
+      "id": "5a9c86fe-eec4-4891-9337-01a0e2afe798",
       "name": "Merge Code Issues"
-    },
-    {
-      "parameters": {
-        "fieldsToAggregate": {
-          "fieldToAggregate": [
-            {
-              "fieldToAggregate": "output"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
-      "position": [
-        9216,
-        1368
-      ],
-      "id": "cb664b58-b6bc-4068-b0c0-329f71ed5a0c",
-      "name": "Aggregate"
     }
   ],
   "pinData": {
@@ -1218,6 +1191,17 @@
     ]
   },
   "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "If Issues Found": {
       "main": [
         [
@@ -1411,12 +1395,28 @@
         ]
       ]
     },
+    "Postgres PGVector Store Save": {
+      "main": [
+        []
+      ]
+    },
     "No Action1": {
       "main": [
         [
           {
             "node": "Respond to Webhook",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store Retrieve": {
+      "ai_tool": [
+        [
+          {
+            "node": "Consolidation AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -1466,7 +1466,17 @@
         ]
       ]
     },
-    "Consolidation AI Agent": {},
+    "Consolidation AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "OpenAI Chat Model": {
       "ai_languageModel": [
         [
@@ -1619,29 +1629,7 @@
       "main": [
         [
           {
-            "node": "Aggregate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aggregate": {
-      "main": [
-        [
-          {
             "node": "Merge Code Issues",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -1652,14 +1640,13 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "Consolidation AI Agent",
             "type": "main",
             "index": 0
           }
         ]
       ]
-    },
-    "Postgres PGVector Store Retrieve": {}
+    }
   },
   "active": true,
   "settings": {
@@ -1667,7 +1654,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "97ab931b-2806-4909-bcd3-9b1ce2e71148",
+  "versionId": "36da80bd-d6de-4e44-8402-549bc3f1e8ac",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "506d52014ca7191c4e55369401e3d9bc4b613f6675bc608609ca5972bfe8aa2f"

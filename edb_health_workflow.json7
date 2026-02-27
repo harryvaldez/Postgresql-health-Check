@@ -13,18 +13,17 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        7504,
-        1176
+        -752,
+        256
       ],
-      "id": "cdcceea2-67c4-446a-97d5-0359d1d15ce8",
+      "id": "9fb097f8-23a8-4931-8b5c-6b03870b0080",
       "webhookId": "3e56929e-dbe0-4d36-88f2-30a124aa3850",
       "credentials": {
         "jwtAuth": {
           "id": "mISNzbB1PGqLkhF9",
           "name": "JWT Auth account 3"
         }
-      },
-      "onError": "continueRegularOutput"
+      }
     },
     {
       "parameters": {
@@ -54,10 +53,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        11024,
-        1352
+        2192,
+        192
       ],
-      "id": "e914dcba-2431-42c3-b6d2-542a64a965c1",
+      "id": "0109329a-86b2-402b-8c70-291f53351dc0",
       "onError": "continueErrorOutput"
     },
     {
@@ -114,10 +113,10 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        11248,
-        1560
+        2480,
+        320
       ],
-      "id": "d7ba47f1-b57d-4826-a0e2-3927292bafd5",
+      "id": "cbdd71e8-d9aa-487b-8daf-762b88634f8a",
       "name": "Call 'Create Jira Ticket'"
     },
     {
@@ -126,10 +125,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        11248,
-        1176
+        2480,
+        112
       ],
-      "id": "daada364-482d-4699-b5d1-39ae604db83f"
+      "id": "3272027f-1100-493a-97af-893282fdc599"
     },
     {
       "parameters": {
@@ -138,10 +137,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1280
+        -80,
+        -80
       ],
-      "id": "0a240dae-d0cd-463e-995c-01fe8ef2ded8",
+      "id": "36115b93-2586-4a22-b8a0-fb2c54776b1a",
       "name": "System Health Splitter"
     },
     {
@@ -151,10 +150,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        792
+        -80,
+        -560
       ],
-      "id": "6b99f6f1-efe0-4f39-9ebf-6625778d808c",
+      "id": "0b3c2ff0-492f-4622-9dd7-1f217bd2e69f",
       "name": "DB Performance Splitter"
     },
     {
@@ -164,10 +163,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1088
+        -80,
+        -368
       ],
-      "id": "e2a3423b-0339-46c5-a6ce-14f0a2a828ff",
+      "id": "1c5e1f36-4fe3-4b5a-b942-a5e6e0fe0cb4",
       "name": "Backup Recovery Splitter"
     },
     {
@@ -177,10 +176,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1472
+        -80,
+        224
       ],
-      "id": "a88baba3-6042-4354-8722-c898624eace6",
+      "id": "d04c73be-a890-4a9d-a1a5-c24decf4ba53",
       "name": "Security Compliance Splitter"
     },
     {
@@ -190,10 +189,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8304,
-        1664
+        -80,
+        416
       ],
-      "id": "14291fc0-1764-4321-bc09-184e65e926d0",
+      "id": "02c0b1d6-f17c-45c2-92ea-61561d7340a4",
       "name": "Storage Capacity Splitter"
     },
     {
@@ -207,10 +206,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1280
+        -688,
+        -464
       ],
-      "id": "feb9ca49-1de9-4bd2-ac65-6f131c5c2c1c",
+      "id": "218538ba-f849-4f37-ad17-d15c4e059ab3",
       "name": "System Health Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -226,10 +225,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        688
+        208,
+        -560
       ],
-      "id": "7e39c84b-f0aa-476d-b12f-548cd6cc3a38",
+      "id": "944fb6a7-eeab-4546-80f7-3acd6f9d94b4",
       "name": "DB Performance Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -245,10 +244,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1088
+        880,
+        -480
       ],
-      "id": "1a799c53-02ea-48dc-a05f-5f3b01e290e3",
+      "id": "91c90d3e-14a8-4209-b646-9cc3d088bb2c",
       "name": "Backup Recovery Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -264,10 +263,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        8584,
-        1472
+        1072,
+        -832
       ],
-      "id": "894ac473-4d15-49bf-8abd-0f7c968ac66c",
+      "id": "4538f05d-f237-496c-ab6e-6977b933162d",
       "name": "Security Compliance Agent",
       "executeOnce": false,
       "retryOnFail": false
@@ -275,35 +274,80 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Role: You are an expert data analyst specializing in PostgreSQL monitoring and performance optimization.\n\nInput: Analyze the provided SQL Server monitoring data, which includes a summary of server metrics and detailed metrics.  Metrics are seen below:\n\n**Server Info:**\n- Server: {{ $json.server }}\n- Timestamp: {{ $json.timestamp }}\n\n**Consolidation Summary:**\n- Total Issues Found: {{ $json.total_issues }}\n- Issues by Category: {{ JSON.stringify($json.issues_by_category, null, 2) }}\n\n**All Issues (Consolidated & Deduplicated):**\n{{ JSON.stringify($json.issues, null, 2) }}\n\nSteps:\n1. Based on the real-time metrics, formulate a question to search for relevant historical context or best practices using your available tool.\n2. **Use the Knowledge Base Retriever tool** to find relevant information.\n3. Synthesize the real-time metrics with the retrieved historical context.\n4. Identify performance bottlenecks and their root causes.\n5. Assess security risks and compliance issues based on the data.\n6. Evaluate backup and recovery readiness.\n7. Prioritize issues according to their business impact (Critical, High, Medium, Low).\n8. Enumerate all issues identified and important information about each issue. Make a list of issues and format the list using the format_final_json_response tool.\n9. For each issue identified, provide title, priority, brief description, Remediation Steps, and preventative actions\n10. Remove duplicate issues\n\nExpectation: Use format_final_json_response tool to format the output. As an output, produce a list of all issues derived from input metrics after analysis.  Each issue on the list should have a unique title, derived priority, a brief issue description, identified remediation steps to resolve the identified issue, and realistic preventive actions to avoid issue recurrence.",
-        "hasOutputParser": true,
+        "text": "=Role: You are a Storage and Capacity Planning Expert specializing in PostgreSQL storage optimization.\n\nInput: Using 'taskbreakdown' tool, analyze the provided storage and capacity metrics for PostgreSQL/EnterpriseDB Advanced Server 9.6.\n\n**Server Info:**\n- Server: {{ $json.server }}\n- Timestamp: {{ $json.timestamp }}\n\n**Storage Summary:**\n{{ JSON.stringify($json.storage_summary, null, 2) }}\n\n**Disk Usage:**\n{{ $json.disk_usage_percent }}%\n\n**Storage Details:**\n{{ JSON.stringify($json.storage, null, 2) }}\n\n**Largest Tables:**\n{{ JSON.stringify($json.largest_tables, null, 2) }}\n\n**Largest Indexes:**\n{{ JSON.stringify($json.largest_indexes, null, 2) }}\n\n**Analysis Requirements:**\n1. Focus on storage utilization and capacity planning\n2. Analyze disk space consumption trends\n3. Evaluate storage efficiency and optimization opportunities\n4. Assess capacity forecasting and scaling needs\n5. Identify storage-related performance bottlenecks\n6. Prioritize findings by capacity impact (Critical, High, Medium, Low)\n\n**Output Format:**\nProvide a focused analysis of storage and capacity issues with:\n- Issue title and priority\n- Brief description of the storage/capacity problem\n- Specific remediation steps for storage optimization\n- Capacity planning and forecasting recommendations\n- Preventive storage monitoring and alerting improvements\n\nExpectation: Use the format_final_json_response tool to output a list of storage and capacity issues only.",
         "options": {
-          "systemMessage": "You are a Postgres Database Administrator and Performance Analyst with expertise in:\n- Postgres performance tuning and optimization\n- Database security and compliance\n- Backup and disaster recovery planning\n- Proactive monitoring and alerting\n- Risk assessment and mitigation\n\nAnalyze the provided metrics data and generate actionable insights. Your analysis should be:\n- Technically accurate and specific\n- Prioritized by business impact\n- Include concrete remediation steps\n- Consider both immediate fixes and long-term improvements\n- Focus on preventive measures\n\nStructure your response to facilitate creation of prioritized Jira tasks."
+          "systemMessage": "You are a Storage and Capacity Planning Expert with expertise in:\n- PostgreSQL storage architecture and optimization\n- Disk space management and forecasting\n- Table and index size analysis\n- Storage performance tuning\n- Capacity planning and scaling strategies\n- Storage cost optimization\n\nAnalyze storage and capacity metrics and generate actionable insights focused on:\n- Storage utilization trends and forecasting\n- Disk space consumption analysis\n- Storage efficiency optimization opportunities\n- Capacity planning and scaling recommendations\n- Storage-related performance impact assessment\n\nStructure your response to facilitate creation of prioritized Jira tasks for storage and capacity improvements."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        9824,
-        1368
+        1296,
+        -544
       ],
-      "id": "7fadd121-ac0e-4a88-87c5-e8da6a1552cd",
-      "name": "Consolidation AI Agent",
-      "executeOnce": false,
+      "id": "d6339796-ef3d-42df-bd37-0ca9d6f26806",
+      "name": "Storage Capacity Agent",
+      "executeOnce": true,
       "retryOnFail": false,
       "disabled": true
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst serverName = input.server ?? input.server_name ?? 'Unknown';\nconst issues = Array.isArray(input.issues) ? input.issues : [];\n\nconst priorityMap = { Critical: 1, High: 2, Medium: 3, Low: 4 };\n\nfunction toLabelParts(text) {\n  return String(text || '')\n    .toLowerCase()\n    .split(/\\s+/)\n    .map(t => t.replace(/[^a-z0-9]/g, ''))\n    .filter(Boolean)\n    .slice(0, 10);\n}\n\nconst jiraTasks = [];\n\nfor (const issue of issues) {\n  const category = issue.category ?? 'General';\n  const title = issue.title ?? 'Issue';\n  const descriptionText = issue.description ?? '';\n\n  const priorityStr = String(issue.priority ?? 'Medium');\n  const numericPriority = priorityMap[priorityStr] ?? 3;\n\n  if (numericPriority > 2) continue;\n\n  const description = [\n    'Description',\n    descriptionText || 'No description provided.',\n    '',\n    'Immediate Remediation Steps',\n    ' Investigate and remediate: ' + title,\n    ' Validate service impact and confirm recovery for ' + serverName + '.',\n    '',\n    'Preventative Actions and Proactive Monitoring Improvements',\n    ' Add alerting/monitoring for recurrence of: ' + title + '.',\n    ' Track category ' + category + ' health indicators on dashboards.'\n  ].join(String.fromCharCode(10));\n\n  jiraTasks.push({\n    json: {\n      status: 'NOT_OK',\n      summary: '[' + category + '] ' + title,\n      description,\n      priority: numericPriority,\n      labels: Array.from(new Set([ ...toLabelParts(serverName), ...toLabelParts(category), ...toLabelParts(title) ]))\n    }\n  });\n}\n\nif (jiraTasks.length === 0) {\n  return [{ json: { status: 'OK' } }];\n}\n\nreturn jiraTasks;\n"
+        "mode": "multiplex"
+      },
+      "name": "Wait for all Agents",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        -80
+      ],
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidation Code - Aggregate all sub-agent outputs\nconst systemHealthIssues = $node['System Health Agent'].json?.issues ?? [];\nconst dbPerformanceIssues = $node['DB Performance Agent'].json?.issues ?? [];\nconst backupRecoveryIssues = $node['Backup Recovery Agent'].json?.issues ?? [];\nconst securityComplianceIssues = $node['Security Compliance Agent'].json?.issues ?? [];\nconst storageCapacityIssues = $node['Storage Capacity Agent'].json?.issues ?? [];\n\n// Get server info from any input (they all have the same server info)\nconst serverInfo = $input.first().json;\nconst server = serverInfo.server ?? 'Unknown';\nconst timestamp = serverInfo.timestamp;\n\n// Combine all issues\nconst allIssues = [\n  ...systemHealthIssues.map(issue => ({ ...issue, category: 'System Health' })),\n  ...dbPerformanceIssues.map(issue => ({ ...issue, category: 'Database Performance' })),\n  ...backupRecoveryIssues.map(issue => ({ ...issue, category: 'Backup & Recovery' })),\n  ...securityComplianceIssues.map(issue => ({ ...issue, category: 'Security & Compliance' })),\n  ...storageCapacityIssues.map(issue => ({ ...issue, category: 'Storage & Capacity' }))\n];\n\n// Remove duplicates based on title\nconst uniqueIssues = allIssues.filter((issue, index, self) => \n  index === self.findIndex(i => i.title === issue.title)\n);\n\n// Sort by priority (Critical first, then High, Medium, Low)\nconst priorityOrder = { 'Critical': 1, 'High': 2, 'Medium': 3, 'Low': 4 };\nconst sortedIssues = uniqueIssues.sort((a, b) => \n  (priorityOrder[a.priority] || 5) - (priorityOrder[b.priority] || 5)\n);\n\nconst consolidationData = {\n  server,\n  timestamp,\n  total_issues: sortedIssues.length,\n  issues_by_category: {\n    'System Health': systemHealthIssues.length,\n    'Database Performance': dbPerformanceIssues.length,\n    'Backup & Recovery': backupRecoveryIssues.length,\n    'Security & Compliance': securityComplianceIssues.length,\n    'Storage & Capacity': storageCapacityIssues.length\n  },\n  issues: sortedIssues\n};\n\nreturn [{ json: consolidationData }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        10576,
-        1368
+        608,
+        -80
       ],
-      "id": "72668626-c1e4-4cdd-a38f-3f70ca86c095",
+      "id": "de5c26e4-8b9b-4e97-ac26-5e13f0f8b878",
+      "name": "Consolidation Aggregator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are a Senior Database Architect and Analysis Coordinator specializing in PostgreSQL comprehensive health assessment.\n\nInput: Analyze the consolidated findings from all specialized sub-agents for PostgreSQL/EnterpriseDB Advanced Server 9.6.\n\n**Server Info:**\n- Server: {{ $json.server }}\n- Timestamp: {{ $json.timestamp }}\n\n**Consolidation Summary:**\n- Total Issues Found: {{ $json.total_issues }}\n- Issues by Category: {{ JSON.stringify($json.issues_by_category, null, 2) }}\n\n**All Issues (Consolidated & Deduplicated):**\n{{ JSON.stringify($json.issues, null, 2) }}\n\n**Analysis Requirements:**\n1. Synthesize findings from all specialized sub-agents (System Health, Database Performance, Backup & Recovery, Security & Compliance, Storage & Capacity)\n2. Identify cross-category dependencies and related issues\n3. Re-prioritize issues based on overall business impact and interdependencies\n4. Consolidate remediation strategies to avoid conflicting recommendations\n5. Generate comprehensive monitoring and preventive strategy\n6. Focus on actionable insights for database administrators\n\n**Output Format:**\nProvide a comprehensive analysis with:\n- Executive summary of overall database health\n- Prioritized list of all issues (Critical → High → Medium → Low)\n- Consolidated remediation steps that address multiple issues efficiently\n- Preventive monitoring and maintenance recommendations\n- Long-term optimization strategy\n\n**Priority Guidelines:**\n- Critical: Immediate action required, potential data loss or service outage\n- High: Significant performance impact or security risk, address within 24-48 hours\n- Medium: Important optimization opportunities, address within 1-2 weeks\n- Low: Best practice improvements, address during maintenance windows\n\nExpectation: Use the format_final_json_response tool to output a final consolidated list of prioritized issues with comprehensive remediation strategy.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a Senior Database Architect with comprehensive expertise in:\n- PostgreSQL enterprise architecture and design\n- Cross-domain performance optimization\n- Security and compliance integration\n- Disaster recovery and business continuity\n- Capacity planning and scalability\n- Database lifecycle management\n\nSynthesize specialized analyses into cohesive strategy focused on:\n- Holistic database health assessment\n- Multi-domain issue correlation and prioritization\n- Efficient remediation planning\n- Comprehensive monitoring strategy\n- Long-term optimization roadmap\n\nStructure your response to facilitate creation of prioritized Jira tasks with clear business justification and implementation roadmap."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        992,
+        208
+      ],
+      "id": "8106907f-9a8c-4791-b626-e7eaeccd1715",
+      "name": "Consolidation AI Agent",
+      "executeOnce": true,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const jiraTasks = [];\nconst inputItems = $input.all();\n\nfor (const item of inputItems) {\n    if (item.json.output && Array.isArray(item.json.output)) {\n        for (const issue of item.json.output) {\n            const description = [\n                `Description`,\n                issue.Description || 'No description provided.',\n                ``,\n                `Immediate Remediation Steps`\n            ].concat(issue['Immediate remediation steps'] || ['No immediate remediation steps provided.']).map(step => ` ${step}`)\n            .concat([\n                ``,\n                `Preventative Actions and Proactive Monitoring Improvements`\n            ])\n            .concat(issue['Preventative actions and proactive monitoring improvements'] || ['No preventative actions provided.']).map(action => ` ${action}`)\n            .join(String.fromCharCode(10));\n\n            // Map priority: Critical=1, High=2, Medium=3\n            const priStr = (issue.Priority || 'Medium').toLowerCase();\n            const priorityMap = { critical: 1, high: 2, medium: 3 };\n            const numericPriority = priorityMap[priStr] ?? 3;\n\n            // Only create Jira tasks for priority 1 (Critical) and 2 (High)\n            if (numericPriority <= 3) {\n                const task = {\n                    summary: issue.Issue || 'No summary provided.',\n                    description: description,\n                    priority: numericPriority,\n                    labels: (issue.Issue || '').toLowerCase().split(' ').map(l => l.replace(/[^a-z0-9]/g, ''))\n                };\n                jiraTasks.push({ json: task });\n            }\n            // Else: skip Medium (3) and lower priorities\n        }\n    }\n}\n\nreturn jiraTasks;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        208
+      ],
+      "id": "75af2bf2-581c-4433-a702-9a7133c493ca",
       "name": "Code in JavaScript"
     },
     {
@@ -314,10 +358,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        7960,
-        1008
+        2432,
+        1040
       ],
-      "id": "03246aee-df9a-49ed-bc34-14ac8cd0af6a",
+      "id": "c17f3d3f-feb0-40d3-9870-7c5838a07fdf",
       "name": "Embeddings OpenAI1",
       "credentials": {
         "openAiApi": {
@@ -333,10 +377,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        8088,
-        1008
+        2560,
+        1040
       ],
-      "id": "3a32a953-63e5-4136-b8fd-258938f1c223",
+      "id": "6cd23a57-cb24-48bc-8af0-c98121987bcb",
       "name": "Default Data Loader"
     },
     {
@@ -347,10 +391,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
-        7952,
-        784
+        1904,
+        656
       ],
-      "id": "8079dcf9-7844-4989-8212-6c3e61e46644",
+      "id": "0550c772-a586-4035-b84f-eac7117bed44",
       "name": "Postgres PGVector Store Save",
       "credentials": {
         "postgres": {
@@ -367,10 +411,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        10000,
-        1800
+        1168,
+        640
       ],
-      "id": "ebad5d2e-8aac-40e6-9efd-dd7c697c6a30",
+      "id": "aceadd5c-601d-4356-acc7-3c148e10af40",
       "name": "Knowledge Base Retriever tool",
       "credentials": {
         "openAiApi": {
@@ -388,10 +432,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1.3,
       "position": [
-        9920,
-        1592
+        1088,
+        480
       ],
-      "id": "e895ef28-13ca-4d9f-a874-8072bfe2f9ef",
+      "id": "aae5fcb5-2a51-49df-b4c9-35dadc0b1a62",
       "name": "Postgres PGVector Store Retrieve",
       "credentials": {
         "postgres": {
@@ -408,20 +452,20 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        11472,
-        1544
+        2768,
+        560
       ],
-      "id": "d497f447-8c1f-44c3-8e39-89da495e3cf0",
+      "id": "6e9c5ef9-6e7f-4933-ad19-b9cee755f7b5",
       "name": "Respond to Webhook"
     },
     {
       "parameters": {
         "conditions": {
           "options": {
-            "version": 3,
-            "leftValue": "",
             "caseSensitive": true,
-            "typeValidation": "strict"
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
           },
           "conditions": [
             {
@@ -434,35 +478,31 @@
               }
             }
           ],
-          "combinator": "and",
-          "conditions[0]": {
-            "leftValue": "={{ $json.jwtPayload.name }}",
-            "rightValue": "=Health Check Service for EDB"
-          }
+          "combinator": "and"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        7728,
-        1160
+        -528,
+        240
       ],
-      "id": "717b0e6e-ae88-49b4-980c-11fe9d52e834",
+      "id": "d59cc4a8-2d6a-41ac-829f-c68b06ee98ca",
       "name": "If",
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first();\nconst inputData = item.json ?? item;\n\nconst envelope = inputData;\n\nfunction bytesToHuman(bytes) {\n  const value = Number(bytes);\n  if (!Number.isFinite(value)) return { value: null };\n\n  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];\n  let unitIndex = 0;\n  let n = value;\n\n  while (n >= 1024 && unitIndex < units.length - 1) {\n    n /= 1024;\n    unitIndex += 1;\n  }\n\n  const rounded = unitIndex === 0 ? n.toFixed(0) : n.toFixed(2);\n  return { value: rounded + ' ' + units[unitIndex] };\n}\n\nfunction pickMetricsBody(env) {\n  let selected = env;\n  if (env && env.body && env.body.body && env.body.body.data && env.body.body.data.data) selected = env.body.body.data.data;\n  else if (env && env.body && env.body.data && env.body.data.data) selected = env.body.data.data;\n  else if (env && env.body && env.body.data) selected = env.body.data;\n  else if (env && env.body) selected = env.body;\n  else if (env && env.data) selected = env.data;\n\n  return { value: selected };\n}\n\nlet metricsBody = pickMetricsBody(envelope).value;\nif (metricsBody && metricsBody.data && typeof metricsBody.data === 'object') metricsBody = metricsBody.data;\n\nconst jwtPayload = (envelope && envelope.jwtPayload) ? envelope.jwtPayload : (metricsBody ? metricsBody.jwtPayload : null);\nconst serverName = (jwtPayload && (jwtPayload.server_name || jwtPayload.server_ip)) || (metricsBody && (metricsBody.hostname || metricsBody.server_name || metricsBody.server)) || 'Unknown';\nconst timestamp = (metricsBody && metricsBody.timestamp) || (jwtPayload && jwtPayload.timestamp) || null;\n\nconst system = (metricsBody && metricsBody.system) || {};\nconst memory = system.memory_mb || {};\nconst totalMem = Number(memory.total);\nconst usedMem = Number(memory.used);\nconst memUsedPct = Number.isFinite(totalMem) && totalMem > 0 && Number.isFinite(usedMem) ? (usedMem / totalMem) * 100 : null;\n\nconst performance = (metricsBody && metricsBody.performance) || {};\nconst databaseStatus = (metricsBody && metricsBody.database_status) || {};\nconst locks = (metricsBody && metricsBody.locks) || {};\nconst replication = (metricsBody && metricsBody.replication) || {};\nconst backup = (metricsBody && metricsBody.backup) || {};\n\nconst storage = (metricsBody && metricsBody.storage) || {};\nconst databaseSizeBytes = storage.database_size && storage.database_size.database_size_bytes ? storage.database_size.database_size_bytes : null;\nconst tempTotalBytes = storage.temp_objects && storage.temp_objects.temp_objects_total_bytes ? storage.temp_objects.temp_objects_total_bytes : null;\nconst tempObjectsCount = storage.temp_objects && storage.temp_objects.temp_objects_count ? storage.temp_objects.temp_objects_count : null;\n\nconst largestTables = Array.isArray(storage.largest_tables) ? storage.largest_tables : [];\nconst largestIndexes = Array.isArray(storage.largest_indexes) ? storage.largest_indexes : [];\n\nconst storageSummary = {\n  database_size_bytes: databaseSizeBytes,\n  database_size_human: (storage.database_size && storage.database_size.database_size) ? storage.database_size.database_size : bytesToHuman(databaseSizeBytes).value,\n  temp_objects_total_bytes: tempTotalBytes,\n  temp_objects_total_human: (storage.temp_objects && storage.temp_objects.temp_objects_total_size) ? storage.temp_objects.temp_objects_total_size : bytesToHuman(tempTotalBytes).value,\n  temp_objects_count: tempObjectsCount,\n  largest_tables_top: largestTables.slice(0, 10).map(t => ({\n    name: (t && t.schemaname && t.table_name) ? (t.schemaname + '.' + t.table_name) : ((t && t.table_name) ? t.table_name : 'Unknown'),\n    total_bytes: t ? t.total_bytes : null,\n    total_size: (t && t.total_size) ? t.total_size : bytesToHuman(t ? t.total_bytes : null).value\n  })),\n  largest_indexes_top: largestIndexes.slice(0, 10).map(i => ({\n    name: (i && i.schemaname && i.index_name) ? (i.schemaname + '.' + i.index_name) : ((i && i.index_name) ? i.index_name : 'Unknown'),\n    table_name: i ? i.table_name : null,\n    index_bytes: i ? i.index_bytes : null,\n    index_size: (i && i.index_size) ? i.index_size : bytesToHuman(i ? i.index_bytes : null).value\n  }))\n};\n\nconst summary = {\n  server: serverName,\n  timestamp: timestamp,\n  service_status: databaseStatus.service_status || null,\n  connection_status: databaseStatus.connection_status || null,\n  disk_usage_percent: system.disk_usage_percent || null,\n  load_avg_1min: (system.load_avg && system.load_avg['1min']) ? system.load_avg['1min'] : null,\n  memory_used_percent: memUsedPct === null ? null : Number(memUsedPct.toFixed(2)),\n  total_connections: performance.total_connections || null,\n  active_connections: performance.active_connections || null,\n  long_running_queries_count: performance.long_running_queries_count || null,\n  cache_hit_ratio: performance.cache_hit_ratio || null,\n  waiting_sessions: locks.waiting_sessions || null,\n  deadlocks: metricsBody && metricsBody.database && metricsBody.database.stats ? metricsBody.database.stats.deadlocks : null,\n  connected_replicas: replication.connected_replicas || null,\n  archive_mode: backup.archive_mode || null\n};\n\nconst alerts = [];\nif (databaseStatus.service_status && String(databaseStatus.service_status).toLowerCase() !== 'active') {\n  alerts.push({ severity: 'critical', code: 'service_not_active', message: 'Database service is not active', value: databaseStatus.service_status });\n}\nif (databaseStatus.connection_status && String(databaseStatus.connection_status).toLowerCase() !== 'success') {\n  alerts.push({ severity: 'critical', code: 'connection_failed', message: 'Database connection did not succeed', value: databaseStatus.connection_status });\n}\nconst diskUsage = Number(system.disk_usage_percent);\nif (Number.isFinite(diskUsage) && diskUsage >= 90) {\n  alerts.push({ severity: 'critical', code: 'disk_usage_high', message: 'Disk usage is >= 90%', value: diskUsage });\n} else if (Number.isFinite(diskUsage) && diskUsage >= 80) {\n  alerts.push({ severity: 'warning', code: 'disk_usage_elevated', message: 'Disk usage is >= 80%', value: diskUsage });\n}\n\nconst normalizedBody = Object.assign({}, metricsBody, {\n  summary: summary,\n  storage_summary: storageSummary,\n  alerts: alerts\n});\n\nconst output = Object.assign({}, envelope, {\n  body: normalizedBody,\n  jwtPayload: jwtPayload || (envelope ? envelope.jwtPayload : null)\n});\n\nreturn [{ json: output }];\n"
+        "jsCode": "const item = $input.first();\nconst inputData = item.json ?? item;\n\nconst envelope = inputData;\n\nfunction bytesToHuman(bytes) {\n  const value = Number(bytes);\n  if (!Number.isFinite(value)) return null;\n  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];\n  let unitIndex = 0;\n  let n = value;\n  while (n >= 1024 && unitIndex < units.length - 1) {\n    n /= 1024;\n    unitIndex += 1;\n  }\n  const rounded = unitIndex === 0 ? n.toFixed(0) : n.toFixed(2);\n  return `${rounded} ${units[unitIndex]}`;\n}\n\nfunction pickMetricsBody(env) {\n  if (env?.body?.body?.data?.data) return env.body.body.data.data;\n  if (env?.body?.data?.data) return env.body.data.data;\n  if (env?.body?.data) return env.body.data;\n  if (env?.body) return env.body;\n  if (env?.data) return env.data;\n  return env;\n}\n\nlet metricsBody = pickMetricsBody(envelope);\nif (metricsBody?.data && typeof metricsBody.data === 'object') metricsBody = metricsBody.data;\n\nconst jwtPayload = envelope.jwtPayload ?? metricsBody?.jwtPayload ?? null;\nconst serverName = jwtPayload?.server_name ?? jwtPayload?.server_ip ?? metricsBody?.hostname ?? metricsBody?.server_name ?? metricsBody?.server ?? 'Unknown';\nconst timestamp = metricsBody?.timestamp ?? jwtPayload?.timestamp ?? null;\n\nconst system = metricsBody?.system ?? {};\nconst memory = system?.memory_mb ?? {};\nconst totalMem = Number(memory.total);\nconst usedMem = Number(memory.used);\nconst memUsedPct = Number.isFinite(totalMem) && totalMem > 0 && Number.isFinite(usedMem) ? (usedMem / totalMem) * 100 : null;\n\nconst performance = metricsBody?.performance ?? {};\nconst databaseStatus = metricsBody?.database_status ?? {};\nconst locks = metricsBody?.locks ?? {};\nconst replication = metricsBody?.replication ?? {};\nconst backup = metricsBody?.backup ?? {};\n\nconst storage = metricsBody?.storage ?? {};\nconst databaseSizeBytes = storage?.database_size?.database_size_bytes ?? null;\nconst tempTotalBytes = storage?.temp_objects?.temp_objects_total_bytes ?? null;\nconst tempObjectsCount = storage?.temp_objects?.temp_objects_count ?? null;\n\nconst largestTables = Array.isArray(storage?.largest_tables) ? storage.largest_tables : [];\nconst largestIndexes = Array.isArray(storage?.largest_indexes) ? storage.largest_indexes : [];\n\nconst storageSummary = {\n  database_size_bytes: databaseSizeBytes,\n  database_size_human: storage?.database_size?.database_size ?? bytesToHuman(databaseSizeBytes),\n  temp_objects_total_bytes: tempTotalBytes,\n  temp_objects_total_human: storage?.temp_objects?.temp_objects_total_size ?? bytesToHuman(tempTotalBytes),\n  temp_objects_count: tempObjectsCount,\n  largest_tables_top: largestTables.slice(0, 10).map(t => ({\n    name: t?.schemaname && t?.table_name ? `${t.schemaname}.${t.table_name}` : (t?.table_name ?? 'Unknown'),\n    total_bytes: t?.total_bytes ?? null,\n    total_size: t?.total_size ?? bytesToHuman(t?.total_bytes)\n  })),\n  largest_indexes_top: largestIndexes.slice(0, 10).map(i => ({\n    name: i?.schemaname && i?.index_name ? `${i.schemaname}.${i.index_name}` : (i?.index_name ?? 'Unknown'),\n    table_name: i?.table_name ?? null,\n    index_bytes: i?.index_bytes ?? null,\n    index_size: i?.index_size ?? bytesToHuman(i?.index_bytes)\n  }))\n};\n\nconst summary = {\n  server: serverName,\n  timestamp,\n  service_status: databaseStatus?.service_status ?? null,\n  connection_status: databaseStatus?.connection_status ?? null,\n  disk_usage_percent: system?.disk_usage_percent ?? null,\n  load_avg_1min: system?.load_avg?.['1min'] ?? null,\n  memory_used_percent: memUsedPct === null ? null : Number(memUsedPct.toFixed(2)),\n  total_connections: performance?.total_connections ?? null,\n  active_connections: performance?.active_connections ?? null,\n  long_running_queries_count: performance?.long_running_queries_count ?? null,\n  cache_hit_ratio: performance?.cache_hit_ratio ?? null,\n  waiting_sessions: locks?.waiting_sessions ?? null,\n  deadlocks: metricsBody?.database?.stats?.deadlocks ?? null,\n  connected_replicas: replication?.connected_replicas ?? null,\n  archive_mode: backup?.archive_mode ?? null\n};\n\nconst alerts = [];\nif (databaseStatus?.service_status && String(databaseStatus.service_status).toLowerCase() !== 'active') {\n  alerts.push({ severity: 'critical', code: 'service_not_active', message: 'Database service is not active', value: databaseStatus.service_status });\n}\nif (databaseStatus?.connection_status && String(databaseStatus.connection_status).toLowerCase() !== 'success') {\n  alerts.push({ severity: 'critical', code: 'connection_failed', message: 'Database connection did not succeed', value: databaseStatus.connection_status });\n}\nconst diskUsage = Number(system?.disk_usage_percent);\nif (Number.isFinite(diskUsage) && diskUsage >= 90) {\n  alerts.push({ severity: 'critical', code: 'disk_usage_high', message: 'Disk usage is >= 90%', value: diskUsage });\n} else if (Number.isFinite(diskUsage) && diskUsage >= 80) {\n  alerts.push({ severity: 'warning', code: 'disk_usage_elevated', message: 'Disk usage is >= 80%', value: diskUsage });\n}\n\nconst normalizedBody = {\n  ...metricsBody,\n  summary,\n  storage_summary: storageSummary,\n  alerts\n};\n\nconst output = {\n  ...envelope,\n  body: normalizedBody,\n  jwtPayload: jwtPayload ?? envelope.jwtPayload\n};\n\nreturn [{ json: output }];\n"
       },
-      "id": "8f151d0b-e5d2-475e-a7fd-606273134ec4",
+      "id": "efc2056b-0e17-4bfd-b3ad-1b24f98f2be0",
       "name": "Parse Metric Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        8016,
-        1184
+        -304,
+        -176
       ]
     },
     {
@@ -483,37 +523,52 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        10800,
-        1368
+        1968,
+        208
       ],
-      "id": "51929247-3ed2-418e-8d6b-5541621b86a3",
+      "id": "944f3a25-9ded-4e47-a5c8-b1d910263f3f",
       "name": "Edit Fields"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-4.1-nano",
+          "value": "gpt-5-nano",
           "mode": "list",
-          "cachedResultName": "gpt-4.1-nano"
+          "cachedResultName": "gpt-5-nano"
         },
-        "builtInTools": {
-          "codeInterpreter": false
-        },
+        "builtInTools": {},
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        9664,
-        1592
+        832,
+        432
       ],
-      "id": "130efe71-e13e-4ec4-ac5f-c494398f09e3",
+      "id": "e5d81de4-826b-46f4-a093-ece528700b8e",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
           "id": "Bao7fdo5PoGyndjW",
           "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        432
+      ],
+      "id": "a475cdbe-0166-4767-87d4-9513175a0c99",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "u2CnfCollVH1WfsI",
+          "name": "PG Vector Store"
         }
       }
     },
@@ -525,10 +580,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        8656,
-        912
+        272,
+        48
       ],
-      "id": "3856929a-45e3-413d-bdb3-f507cdaac8ef",
+      "id": "e1c395da-75c0-4e65-b770-d9c0d79336a2",
       "name": "Postgres Chat Memory1",
       "credentials": {
         "postgres": {
@@ -545,12 +600,11 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.2,
       "position": [
-        8784,
-        912
+        400,
+        48
       ],
-      "id": "cb437468-fb5e-4a50-8c9b-ce147061cea0",
-      "name": "clearthought",
-      "disabled": true
+      "id": "50e9de12-38d2-48be-8cf6-21087ea26936",
+      "name": "clearthought"
     },
     {
       "parameters": {
@@ -561,10 +615,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        10208,
-        1592
+        1344,
+        352
       ],
-      "id": "25a8374c-fa8f-432d-94b3-5f098a5b06e3",
+      "id": "0c8b0b4b-a4d1-489e-ae0a-2f8f20329c4d",
       "name": "format_final_json_response"
     },
     {
@@ -581,10 +635,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        10288,
-        1800
+        1456,
+        416
       ],
-      "id": "7b77f83b-05c1-448a-b603-6ca252b99af3",
+      "id": "00ece1a2-b0c5-4812-9f2b-92ffa03a871e",
       "name": "OpenAI Chat Model2",
       "credentials": {
         "openAiApi": {
@@ -607,10 +661,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        8528,
-        912
+        144,
+        48
       ],
-      "id": "d43d8deb-bc93-47d6-97b4-3f1c47633a89",
+      "id": "515f62b4-fb15-4dca-8970-70ff1c6cf19e",
       "name": "OpenAI Chat Model1",
       "credentials": {
         "openAiApi": {
@@ -621,88 +675,49 @@
     },
     {
       "parameters": {
-        "promptType": "define",
-        "text": "=Role: You are a Storage and Capacity Planning Expert specializing in PostgreSQL storage optimization.\n\nInput: Using 'taskbreakdown' tool, analyze the provided storage and capacity metrics for PostgreSQL/EnterpriseDB Advanced Server 9.6.\n\n**Server Info:**\n- Server: {{ $json.server }}\n- Timestamp: {{ $json.timestamp }}\n\n**Storage Summary:**\n{{ JSON.stringify($json.storage_summary, null, 2) }}\n\n**Disk Usage:**\n{{ $json.disk_usage_percent }}%\n\n**Storage Details:**\n{{ JSON.stringify($json.storage, null, 2) }}\n\n**Largest Tables:**\n{{ JSON.stringify($json.largest_tables, null, 2) }}\n\n**Largest Indexes:**\n{{ JSON.stringify($json.largest_indexes, null, 2) }}\n\n**Analysis Requirements:**\n1. Focus on storage utilization and capacity planning\n2. Analyze disk space consumption trends\n3. Evaluate storage efficiency and optimization opportunities\n4. Assess capacity forecasting and scaling needs\n5. Identify storage-related performance bottlenecks\n6. Prioritize findings by capacity impact (Critical, High, Medium, Low)\n\n**Output Format:**\nProvide a focused analysis of storage and capacity issues with:\n- Issue title and priority\n- Brief description of the storage/capacity problem\n- Specific remediation steps for storage optimization\n- Capacity planning and forecasting recommendations\n- Preventive storage monitoring and alerting improvements\n\nExpectation: Use the format_final_json_response tool to output a list of storage and capacity issues only.",
-        "options": {
-          "systemMessage": "You are a Storage and Capacity Planning Expert with expertise in:\n- PostgreSQL storage architecture and optimization\n- Disk space management and forecasting\n- Table and index size analysis\n- Storage performance tuning\n- Capacity planning and scaling strategies\n- Storage cost optimization\n\nAnalyze storage and capacity metrics and generate actionable insights focused on:\n- Storage utilization trends and forecasting\n- Disk space consumption analysis\n- Storage efficiency optimization opportunities\n- Capacity planning and scaling recommendations\n- Storage-related performance impact assessment\n\nStructure your response to facilitate creation of prioritized Jira tasks for storage and capacity improvements."
-        }
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "builtInTools": {},
+        "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
       "position": [
-        8584,
-        1664
+        -784,
+        -256
       ],
-      "id": "e4d3f298-424d-4422-a1b0-d714a6567428",
-      "name": "Storage Capacity Agent",
-      "executeOnce": false,
-      "retryOnFail": false
+      "id": "2f7e6579-6336-4cb3-8dfe-a7d65385efa7",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "Bao7fdo5PoGyndjW",
+          "name": "OpenAi account 2"
+        }
+      }
     },
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Webhook').item.json.jwtPayload?.timestamp ?? $('Webhook').item.json.body?.jwtPayload?.timestamp ?? $('Webhook').item.json.body?.timestamp }}"
+        "sessionKey": "={{ $('Webhook').item.json.body.timestamp }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        9792,
-        1592
+        -688,
+        -256
       ],
-      "id": "27906f9f-4062-47ff-b416-3daf1e7b7c76",
-      "name": "Postgres Chat Memory",
+      "id": "5b10e4e0-a050-44dc-9276-d7412438b194",
+      "name": "Postgres Chat Memory2",
       "credentials": {
         "postgres": {
           "id": "u2CnfCollVH1WfsI",
           "name": "PG Vector Store"
         }
       }
-    },
-    {
-      "parameters": {
-        "numberInputs": 5
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        8992,
-        1320
-      ],
-      "id": "0519c623-0679-49c7-91ed-a2c548cc9283",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "jsCode": "function parseIssuesFromNodeJson(nodeJson) {\n  const raw = nodeJson?.issues ?? nodeJson?.output ?? nodeJson;\n\n  let parsed = raw;\n  if (typeof parsed === 'string') {\n    try {\n      parsed = JSON.parse(parsed);\n    } catch {\n      return [];\n    }\n  }\n\n  if (Array.isArray(parsed)) return parsed;\n  if (parsed && Array.isArray(parsed.issues)) return parsed.issues;\n  if (parsed && Array.isArray(parsed.output)) return parsed.output;\n\n  return [];\n}\n\nfunction toStringArray(value) {\n  if (!value) return [];\n  if (Array.isArray(value)) return value.map(v => String(v)).filter(Boolean);\n  if (typeof value === 'string') return [value].filter(Boolean);\n  return [];\n}\n\nfunction buildDescription(base, remediationSteps, preventativeSteps) {\n  const parts = [];\n\n  const baseText = String(base ?? '').trim();\n  if (baseText) parts.push(baseText);\n\n  if (remediationSteps.length) {\n    parts.push('');\n    parts.push('Immediate remediation steps');\n    for (const step of remediationSteps) parts.push('- ' + step);\n  }\n\n  if (preventativeSteps.length) {\n    parts.push('');\n    parts.push('Preventative actions and proactive monitoring improvements');\n    for (const step of preventativeSteps) parts.push('- ' + step);\n  }\n\n  return parts.join(String.fromCharCode(10)).trim();\n}\n\nfunction normalizeIssue(issue) {\n  const title = issue?.title ?? issue?.Issue ?? 'Untitled';\n  const priority = issue?.priority ?? issue?.Priority ?? 'Medium';\n\n  const baseDescription = issue?.description ?? issue?.Description ?? '';\n\n  const remediationSteps = [\n    ...toStringArray(issue?.remediation),\n    ...toStringArray(issue?.remediation_steps),\n    ...toStringArray(issue?.['Immediate remediation steps']),\n    ...toStringArray(issue?.immediate_remediation_steps)\n  ];\n\n  const preventativeSteps = [\n    ...toStringArray(issue?.monitoring),\n    ...toStringArray(issue?.preventative),\n    ...toStringArray(issue?.preventive),\n    ...toStringArray(issue?.['Preventative actions and proactive monitoring improvements']),\n    ...toStringArray(issue?.preventative_actions),\n    ...toStringArray(issue?.preventative_actions_and_proactive_monitoring_improvements)\n  ];\n\n  return {\n    title: String(title),\n    priority: String(priority),\n    description: buildDescription(baseDescription, remediationSteps, preventativeSteps)\n  };\n}\n\nconst metrics = $('Parse Metric Data').first().json;\nconst body = metrics.body ?? {};\nconst summary = body.summary ?? {};\n\nconst server = summary.server ?? body.hostname ?? body.server ?? 'Unknown';\nconst timestamp = summary.timestamp ?? body.timestamp ?? null;\n\nconst categorySources = [\n  { category: 'System Health', nodeJson: $('System Health Agent').first().json },\n  { category: 'Database Performance', nodeJson: $('DB Performance Agent').first().json },\n  { category: 'Backup & Recovery', nodeJson: $('Backup Recovery Agent').first().json },\n  { category: 'Security & Compliance', nodeJson: $('Security Compliance Agent').first().json },\n  { category: 'Storage & Capacity', nodeJson: $('Storage Capacity Agent').first().json }\n];\n\nconst issuesByCategory = {};\nconst allIssues = [];\n\nfor (const { category, nodeJson } of categorySources) {\n  const issues = parseIssuesFromNodeJson(nodeJson);\n  issuesByCategory[category] = issues.length;\n\n  for (const issue of issues) {\n    const normalized = normalizeIssue(issue);\n    allIssues.push({\n      category,\n      title: normalized.title,\n      priority: normalized.priority,\n      description: normalized.description\n    });\n  }\n}\n\nconst uniqueIssues = allIssues.filter((issue, index, self) => index === self.findIndex(i => i.title === issue.title && i.category === issue.category));\n\nconst priorityOrder = { Critical: 1, High: 2, Medium: 3, Low: 4 };\nconst sortedIssues = uniqueIssues.sort((a, b) => (priorityOrder[a.priority] || 5) - (priorityOrder[b.priority] || 5));\n\nreturn [{\n  json: {\n    server,\n    timestamp,\n    total_issues: sortedIssues.length,\n    issues_by_category: issuesByCategory,\n    issues: sortedIssues\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        9440,
-        1368
-      ],
-      "id": "d6a6b6b2-e543-4e6b-8561-1c6af9db778c",
-      "name": "Merge Code Issues"
-    },
-    {
-      "parameters": {
-        "fieldsToAggregate": {
-          "fieldToAggregate": [
-            {
-              "fieldToAggregate": "output"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
-      "position": [
-        9216,
-        1368
-      ],
-      "id": "cb664b58-b6bc-4068-b0c0-329f71ed5a0c",
-      "name": "Aggregate"
     }
   ],
   "pinData": {
@@ -712,41 +727,41 @@
           "headers": {
             "host": "claritasllc.app.n8n.cloud",
             "user-agent": "EDB-Monitor/1.0",
-            "content-length": "8993",
+            "content-length": "8992",
             "accept": "*/*",
             "accept-encoding": "gzip, br",
-            "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZGItbW9uaXRvciIsIm5hbWUiOiJIZWFsdGggQ2hlY2sgU2VydmljZSBmb3IgRURCIiwicm9sZSI6InNlcnZpY2UiLCJzZXJ2aWNlX2lkIjoibW9uaXRvci1lZGItYXMtOS42Iiwic2VydmVyX25hbWUiOiJzbXNzdGdkYmEwMS5yZWRkb2cubWljcm9zb2Z0LmNvbSIsInRpbWVzdGFtcCI6IjIwMjYtMDEtMTFUMDc6NTQ6MDBaIiwiaWF0IjoxNzY4MTE4MTczLCJleHAiOjE3NjgxMTg0NzN9.wUq7I8m6DoCjVR6RDp1KaI6egki8zKM_kaKFlMrg6to",
+            "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZGItbW9uaXRvciIsIm5hbWUiOiJIZWFsdGggQ2hlY2sgU2VydmljZSBmb3IgRURCIiwicm9sZSI6InNlcnZpY2UiLCJzZXJ2aWNlX2lkIjoibW9uaXRvci1lZGItYXMtOS42Iiwic2VydmVyX25hbWUiOiJzbXNzdGdkYmEwMS5yZWRkb2cubWljcm9zb2Z0LmNvbSIsInRpbWVzdGFtcCI6IjIwMjYtMDEtMTBUMTk6MTc6NTdaIiwiaWF0IjoxNzY4MDcyNzk5LCJleHAiOjE3NjgwNzMwOTl9.SJBnZJMC5MZ4rpGuwTklnZtYdu7uo5-0LYqmPDOGZcI",
             "cdn-loop": "cloudflare; loops=1; subreqs=1",
             "cf-connecting-ip": "20.12.178.118",
             "cf-ew-via": "15",
             "cf-ipcountry": "US",
-            "cf-ray": "9bc2db3a45e8345b-DFW",
+            "cf-ray": "9bbe8775976aeadc-ORD",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "cf-worker": "n8n.cloud",
             "content-type": "application/json",
-            "x-forwarded-for": "20.12.178.118, 172.71.175.88",
+            "x-forwarded-for": "20.12.178.118, 172.70.126.37",
             "x-forwarded-host": "claritasllc.app.n8n.cloud",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "traefik-prod-users-gwc-4-644c4bcdb9-tgq2d",
+            "x-forwarded-server": "traefik-prod-users-gwc-4-644c4bcdb9-55ggx",
             "x-is-trusted": "yes",
             "x-real-ip": "20.12.178.118"
           },
           "params": {},
           "query": {},
           "body": {
-            "timestamp": "2026-01-11T07:54:00Z",
+            "timestamp": "2026-01-10T19:17:57Z",
             "hostname": "smsstgdba01.reddog.microsoft.com",
             "system": {
               "load_avg": {
-                "1min": 7.23,
-                "5min": 7.48,
-                "15min": 8.13
+                "1min": 4.43,
+                "5min": 4.62,
+                "15min": 4.65
               },
               "memory_mb": {
                 "total": 128941,
-                "used": 52744,
-                "free": 3754
+                "used": 44640,
+                "free": 643
               },
               "disk_usage_percent": 47
             },
@@ -755,30 +770,30 @@
               "connection_status": "success"
             },
             "performance": {
-              "total_connections": 313,
-              "active_connections": 3,
+              "total_connections": 311,
+              "active_connections": 1,
               "idle_connections": 310,
               "idle_in_transaction_connections": 0,
-              "long_running_queries_count": 2,
+              "long_running_queries_count": 0,
               "cache_hit_ratio": 98.64
             },
             "database": {
               "stats": {
                 "datname": "lenexa",
-                "numbackends": 312,
-                "xact_commit": 321937094,
-                "xact_rollback": 1532,
-                "blks_read": 45727290491,
-                "blks_hit": 3574332188701,
-                "tup_returned": 20549896774087,
-                "tup_fetched": 280224658422,
-                "tup_inserted": 506480863749,
-                "tup_updated": 311702566,
-                "tup_deleted": 9735688,
+                "numbackends": 310,
+                "xact_commit": 321328013,
+                "xact_rollback": 1467,
+                "blks_read": 45337251430,
+                "blks_hit": 3559199064970,
+                "tup_returned": 20497258600634,
+                "tup_fetched": 279590039595,
+                "tup_inserted": 501832900973,
+                "tup_updated": 311695271,
+                "tup_deleted": 9727431,
                 "conflicts": 0,
                 "deadlocks": 0,
-                "temp_files": 4811,
-                "temp_bytes": 4323818968335
+                "temp_files": 4803,
+                "temp_bytes": 4315916948751
               }
             },
             "locks": {
@@ -791,8 +806,8 @@
                 {
                   "schemaname": "pg_temp_172",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 644753,
-                  "n_dead_tup": 11272,
+                  "n_live_tup": 639498,
+                  "n_dead_tup": 11127,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -801,8 +816,8 @@
                 {
                   "schemaname": "pg_temp_280",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 372367,
-                  "n_dead_tup": 7207,
+                  "n_live_tup": 368350,
+                  "n_dead_tup": 7189,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -811,18 +826,8 @@
                 {
                   "schemaname": "pg_temp_282",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 319794,
-                  "n_dead_tup": 6937,
-                  "last_vacuum": null,
-                  "last_autovacuum": null,
-                  "last_analyze": null,
-                  "last_autoanalyze": null
-                },
-                {
-                  "schemaname": "pg_temp_174",
-                  "relname": "index_advisor_log",
-                  "n_live_tup": 566972,
-                  "n_dead_tup": 5520,
+                  "n_live_tup": 315591,
+                  "n_dead_tup": 6805,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -839,10 +844,20 @@
                   "last_autoanalyze": null
                 },
                 {
+                  "schemaname": "pg_temp_174",
+                  "relname": "index_advisor_log",
+                  "n_live_tup": 562769,
+                  "n_dead_tup": 5388,
+                  "last_vacuum": null,
+                  "last_autovacuum": null,
+                  "last_analyze": null,
+                  "last_autoanalyze": null
+                },
+                {
                   "schemaname": "pg_temp_167",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 369016,
-                  "n_dead_tup": 1933,
+                  "n_live_tup": 364690,
+                  "n_dead_tup": 1910,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -851,8 +866,8 @@
                 {
                   "schemaname": "pg_temp_276",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 480419,
-                  "n_dead_tup": 1833,
+                  "n_live_tup": 476402,
+                  "n_dead_tup": 1815,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -861,8 +876,8 @@
                 {
                   "schemaname": "pg_temp_278",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 427943,
-                  "n_dead_tup": 1709,
+                  "n_live_tup": 423926,
+                  "n_dead_tup": 1691,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -871,8 +886,8 @@
                 {
                   "schemaname": "pg_temp_169",
                   "relname": "index_advisor_log",
-                  "n_live_tup": 311699,
-                  "n_dead_tup": 1542,
+                  "n_live_tup": 307650,
+                  "n_dead_tup": 1524,
                   "last_vacuum": null,
                   "last_autovacuum": null,
                   "last_analyze": null,
@@ -893,87 +908,87 @@
                 {
                   "schemaname": "pg_temp_535",
                   "relname": "temp_ds_3483848_usa_213159908522000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_537",
                   "relname": "temp_ds_3203445_sta_210344062489000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_537",
                   "relname": "temp_ds_3483848_sta_210216867055000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_535",
                   "relname": "temp_ds_3483848_sta_210219398513000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_535",
                   "relname": "temp_ds_3483848_sta_213231170140000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_537",
                   "relname": "temp_ds_3483848_sta_210241718691000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_535",
                   "relname": "temp_ds_3483848_sta_210118644589000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_535",
                   "relname": "temp_ds_3483848_sta_210148999009000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_537",
                   "relname": "temp_ds_3203445_sta_210428593893000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 },
                 {
                   "schemaname": "pg_temp_537",
                   "relname": "temp_ds_3203445_sta_210405661595000",
-                  "freeze_age": 80502272,
+                  "freeze_age": 80499177,
                   "total_bytes": 0
                 }
               ]
             },
             "wal": {
               "bgwriter": {
-                "checkpoints_timed": 11856,
-                "checkpoints_req": 138697,
-                "checkpoint_write_time": 3843752729,
-                "checkpoint_sync_time": 55324377,
-                "buffers_checkpoint": 2106016340,
-                "buffers_clean": 33569965,
-                "buffers_backend": 31633217689,
-                "maxwritten_clean": 2790,
-                "buffers_alloc": 4844829145
+                "checkpoints_timed": 11811,
+                "checkpoints_req": 137420,
+                "checkpoint_write_time": 3819440108,
+                "checkpoint_sync_time": 54644430,
+                "buffers_checkpoint": 2087797030,
+                "buffers_clean": 33393815,
+                "buffers_backend": 31342824151,
+                "maxwritten_clean": 2788,
+                "buffers_alloc": 4819168687
               }
             },
             "storage": {
               "database_size": {
-                "database_size_bytes": 3918751611984,
-                "database_size": "3650 GB"
+                "database_size_bytes": 3931692170320,
+                "database_size": "3662 GB"
               },
               "temp_objects": {
-                "temp_objects_total_bytes": 18760278016,
+                "temp_objects_total_bytes": 18747867136,
                 "temp_objects_total_size": "17 GB",
-                "temp_objects_count": 77719
+                "temp_objects_count": 76994
               },
               "largest_tables": [
                 {
@@ -1206,9 +1221,9 @@
             "role": "service",
             "service_id": "monitor-edb-as-9.6",
             "server_name": "smsstgdba01.reddog.microsoft.com",
-            "timestamp": "2026-01-11T07:54:00Z",
-            "iat": 1768118173,
-            "exp": 1768118473
+            "timestamp": "2026-01-10T19:17:57Z",
+            "iat": 1768072799,
+            "exp": 1768073099
           }
         },
         "pairedItem": {
@@ -1218,6 +1233,17 @@
     ]
   },
   "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "If Issues Found": {
       "main": [
         [
@@ -1400,11 +1426,33 @@
         ]
       ]
     },
+    "Consolidation Aggregator": {
+      "main": [
+        [
+          {
+            "node": "Consolidation AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Edit Fields": {
       "main": [
         [
           {
             "node": "If Issues Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store Save": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -1422,13 +1470,24 @@
         ]
       ]
     },
+    "Postgres PGVector Store Retrieve": {
+      "ai_tool": [
+        [
+          {
+            "node": "Consolidation AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "System Health Agent": {
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Wait for all Agents",
             "type": "main",
-            "index": 2
+            "index": 0
           }
         ]
       ]
@@ -1437,7 +1496,7 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Wait for all Agents",
             "type": "main",
             "index": 0
           }
@@ -1448,9 +1507,9 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Wait for all Agents",
             "type": "main",
-            "index": 1
+            "index": 0
           }
         ]
       ]
@@ -1459,20 +1518,63 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Wait for all Agents",
             "type": "main",
-            "index": 3
+            "index": 0
           }
         ]
       ]
     },
-    "Consolidation AI Agent": {},
+    "Storage Capacity Agent": {
+      "main": [
+        [
+          {
+            "node": "Wait for all Agents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for all Agents": {
+      "main": [
+        [
+          {
+            "node": "Consolidation Aggregator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidation AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "OpenAI Chat Model": {
       "ai_languageModel": [
         [
           {
             "node": "Consolidation AI Agent",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Consolidation AI Agent",
+            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -1485,26 +1587,6 @@
             "node": "DB Performance Agent",
             "type": "ai_memory",
             "index": 0
-          },
-          {
-            "node": "System Health Agent",
-            "type": "ai_memory",
-            "index": 0
-          },
-          {
-            "node": "Backup Recovery Agent",
-            "type": "ai_memory",
-            "index": 0
-          },
-          {
-            "node": "Security Compliance Agent",
-            "type": "ai_memory",
-            "index": 0
-          },
-          {
-            "node": "Storage Capacity Agent",
-            "type": "ai_memory",
-            "index": 0
           }
         ]
       ]
@@ -1514,26 +1596,6 @@
         [
           {
             "node": "DB Performance Agent",
-            "type": "ai_tool",
-            "index": 0
-          },
-          {
-            "node": "System Health Agent",
-            "type": "ai_tool",
-            "index": 0
-          },
-          {
-            "node": "Backup Recovery Agent",
-            "type": "ai_tool",
-            "index": 0
-          },
-          {
-            "node": "Security Compliance Agent",
-            "type": "ai_tool",
-            "index": 0
-          },
-          {
-            "node": "Storage Capacity Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -1569,97 +1631,32 @@
             "node": "DB Performance Agent",
             "type": "ai_languageModel",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
           {
             "node": "System Health Agent",
             "type": "ai_languageModel",
             "index": 0
-          },
-          {
-            "node": "Backup Recovery Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Security Compliance Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Storage Capacity Agent",
-            "type": "ai_languageModel",
-            "index": 0
           }
         ]
       ]
     },
-    "Storage Capacity Agent": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 4
-          }
-        ]
-      ]
-    },
-    "Postgres Chat Memory": {
+    "Postgres Chat Memory2": {
       "ai_memory": [
         [
           {
-            "node": "Consolidation AI Agent",
+            "node": "System Health Agent",
             "type": "ai_memory",
             "index": 0
           }
         ]
       ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Aggregate",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aggregate": {
-      "main": [
-        [
-          {
-            "node": "Merge Code Issues",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge Code Issues": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres PGVector Store Retrieve": {}
+    }
   },
   "active": true,
   "settings": {
@@ -1667,7 +1664,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "97ab931b-2806-4909-bcd3-9b1ce2e71148",
+  "versionId": "fcca11ea-b78a-4341-b944-951efc20c90b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "506d52014ca7191c4e55369401e3d9bc4b613f6675bc608609ca5972bfe8aa2f"
