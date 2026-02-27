@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 logs/
 dist/
 __pycache__/
@@ -6,6 +8,16 @@ __pycache__/
 node_modules/
 *.zip
 *.log
+*.tmp
+*.bak
+*.pid
+*.swp
+*.pyc
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+coverage.xml
+Thumbs.db
 edb_health_workflow*.json1
 edb_health_workflow*.json2
 edb_health_workflow (*).json*
