@@ -188,13 +188,24 @@ vi .env
 ```bash
 # Test metric collection
 cd /usr/local/bin/edb-monitor
-./collect_metrics.sh
+./collect_metrics.sh \
+   --host-username monitor_user \
+   --server-name db-server.example.com \
+   --ssh-port 22 \
+   --db-username edb_monitor_svc \
+   --db-password 'your_secure_password_here' \
+   --db-port 5444 \
+   --db-name edb
 
 # Verify JSON output
 cat /tmp/edb_health_metrics.json | jq .
 
 # Test webhook transmission (if configured)
-./collect_metrics.sh
+./collect_metrics.sh \
+   --host-username monitor_user \
+   --server-name db-server.example.com \
+   --db-username edb_monitor_svc \
+   --db-password 'your_secure_password_here'
 ```
 
 ---
