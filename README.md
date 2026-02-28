@@ -46,11 +46,19 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
     ```
 4.  Edit the `.env` file with your actual database credentials, paths, and webhook details:
     ```ini
-    # Database Configuration
-    PGUSER=enterprisedb
-    PGPASSWORD=your_secure_password
+    # Remote Server (System Metrics via SSH)
+    HOST_USERNAME=monitor_user
+    SERVER_NAME=db-server.example.com
+    SSH_PORT=22
+
+    # Remote Database (DB Metrics via psql)
+    DB_USERNAME=edb_monitor_svc
+    DB_PASSWORD=your_secure_password
+    DB_HOST=db-server.example.com
+    DB_PORT=5444
     PGDATABASE=edb
-    PGPORT=5444
+
+    # Local client binary path (where script runs)
     PGBIN=/usr/edb/as9.6/bin
     SERVICE_NAME=edb-as-9.6
 
@@ -94,7 +102,7 @@ Since `collect_metrics.sh` now handles webhook transmission internally (when `WE
 
 The system monitors the following:
 
-1.  **System Health**: CPU Load (1/5/15 min), Memory Usage, Disk Usage (Root).
+1.  **System Health**: CPU utilization (%), Memory utilization (%), Disk usage (%) for `/data`.
 2.  **Database Status**: Systemd service status, connection check.
 3.  **Performance**: Total/Active/Idle connections, idle-in-transaction sessions, long-running queries (configurable `LONG_QUERY_THRESHOLD`), cache hit ratio.
 4.  **Database Stats**: `pg_stat_database` counters (including `temp_files` and `temp_bytes`).
@@ -135,3 +143,8 @@ If the AI Agent outputs issues, a Jira task is automatically created (via the â€
 -   **Adding Metrics**: Add new functions to `collect_metrics.sh` and ensure they output valid JSON fields.
 -   **Adjusting Thresholds**: Modify variables in `.env` or the prompt in the **AI Agent Analysis** node in n8n.
 -   **Alerting Channels**: Add nodes for Slack, Email, or Teams in the n8n workflow.
+
+## Logging
+
+- Script logs are written under `logs/` with hostname-prefixed daily filenames:
+    `<server_name>_execution_YYYY-MM-DD.log`
