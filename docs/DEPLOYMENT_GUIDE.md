@@ -484,7 +484,7 @@ echo "=== All tests completed ==="
 
 1. **Review Logs** (Weekly):
    ```bash
-   tail -f /usr/local/bin/edb-monitor/logs/execution_$(date +%Y-%m-%d).log
+   tail -f /usr/local/bin/edb-monitor/logs/<server_name>_execution_$(date +%Y-%m-%d).log
    ```
 
 2. **Check Metric Quality** (Monthly):
@@ -545,7 +545,7 @@ echo "=== All tests completed ==="
 - Check file permissions: `chmod +x collect_metrics.sh`
 - Verify database connectivity: `edb-psql -U enterprisedb -d edb -c "SELECT 1"`
 - Check Python installation: `python3 --version`
-- Review logs: `cat /usr/local/bin/edb-monitor/logs/execution_*.log`
+- Review logs: `cat /usr/local/bin/edb-monitor/logs/*_execution_*.log`
 
 #### 2. JSON Validation Fails
 
