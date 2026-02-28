@@ -245,20 +245,33 @@ crontab -e
 
 ### Database Permissions
 
-The monitoring script requires read access to various PostgreSQL system catalogs. Ensure the database user has appropriate permissions:
+Use a dedicated read-only monitoring account instead of a superuser. This repo includes a ready-to-run least-privilege SQL script.
 
 ```sql
--- Grant necessary permissions
-GRANT pg_monitor TO enterprisedb;
-GRANT SELECT ON pg_stat_activity TO enterprisedb;
-GRANT SELECT ON pg_stat_database TO enterprisedb;
-GRANT SELECT ON pg_stat_user_tables TO enterprisedb;
-GRANT SELECT ON pg_statio_user_tables TO enterprisedb;
-GRANT SELECT ON pg_stat_bgwriter TO enterprisedb;
-GRANT SELECT ON pg_stat_replication TO enterprisedb;
-GRANT SELECT ON pg_replication_slots TO enterprisedb;
-GRANT SELECT ON pg_settings TO enterprisedb;
+-- Run as admin/superuser
+\i /usr/local/bin/edb-monitor/scripts/create_monitoring_readonly_role.sql
 ```
+
+After running the script:
+
+1. Update `.env` to use the service login created by the SQL script:
+
+```ini
+PGUSER=edb_monitor_svc
+PGPASSWORD=CHANGE_ME_STRONG_PASSWORD
+PGDATABASE=edb
+PGPORT=5444
+```
+
+2. Rotate the placeholder password immediately.
+3. Validate access with:
+
+```bash
+PGUSER=edb_monitor_svc PGPASSWORD='your_password' /usr/edb/as9.6/bin/edb-psql -d edb -p 5444 -c "SELECT 1;"
+PGUSER=edb_monitor_svc PGPASSWORD='your_password' /usr/edb/as9.6/bin/edb-psql -d edb -p 5444 -c "SELECT count(*) FROM pg_stat_activity;"
+```
+
+Note: if cross-session query text is masked in `pg_stat_activity`, that is expected on some deployments unless additional monitoring visibility is granted.
 
 ---
 
