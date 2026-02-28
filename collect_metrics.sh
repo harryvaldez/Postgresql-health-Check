@@ -13,7 +13,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Logging Configuration
 LOG_DIR="${SCRIPT_DIR}/logs"
 mkdir -p "$LOG_DIR"
-LOG_FILE="${LOG_DIR}/execution_$(date +%Y-%m-%d).log"
+LOG_HOSTNAME="${SERVER_NAME:-$(hostname)}"
+LOG_HOSTNAME="$(echo "$LOG_HOSTNAME" | tr -cs '[:alnum:]_.-' '_')"
+LOG_FILE="${LOG_DIR}/${LOG_HOSTNAME}_execution_$(date +%Y-%m-%d).log"
 
 log_msg() {
     local msg="$1"
