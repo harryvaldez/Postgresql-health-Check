@@ -44,7 +44,18 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
     cp /usr/local/bin/.env.example /usr/local/bin/.env
     chmod 600 /usr/local/bin/.env
     ```
-4.  Edit the `.env` file with your actual database credentials, paths, and webhook details:
+4.  Run a remote collection test (copy/paste example):
+    ```bash
+    /usr/local/bin/collect_metrics.sh \
+      --host-username monitor_user \
+      --server-name db-server.example.com \
+      --ssh-port 22 \
+      --db-username edb_monitor_svc \
+      --db-password 'your_secure_password' \
+      --db-port 5444 \
+      --db-name edb
+    ```
+5.  Edit the `.env` file with your actual database credentials, paths, and webhook details:
     ```ini
     # Remote Server (System Metrics via SSH)
     HOST_USERNAME=monitor_user
