@@ -192,6 +192,7 @@ cd /usr/local/bin/edb-monitor
    --host-username monitor_user \
    --server-name db-server.example.com \
    --ssh-port 22 \
+   --ssh-key /home/monitor_user/.ssh/id_rsa \
    --db-username edb_monitor_svc \
    --db-password 'your_secure_password_here' \
    --db-port 5444 \
@@ -204,6 +205,7 @@ cat /tmp/edb_health_metrics.json | jq .
 ./collect_metrics.sh \
    --host-username monitor_user \
    --server-name db-server.example.com \
+   --ssh-key /home/monitor_user/.ssh/id_rsa \
    --db-username edb_monitor_svc \
    --db-password 'your_secure_password_here'
 ```
@@ -219,6 +221,7 @@ cat /tmp/edb_health_metrics.json | jq .
 HOST_USERNAME=monitor_user
 SERVER_NAME=db-server.example.com
 SSH_PORT=22
+SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
 
 # Remote Database (DB Metrics via psql)
 DB_USERNAME=edb_monitor_svc
@@ -256,6 +259,7 @@ Run with explicit CLI parameters (optional when values are in `.env`):
    --host-username monitor_user \
    --server-name db-server.example.com \
    --ssh-port 22 \
+   --ssh-key /home/monitor_user/.ssh/id_rsa \
    --db-username edb_monitor_svc \
    --db-password 'your_secure_password_here' \
    --db-port 5444 \
@@ -297,6 +301,7 @@ PGDATABASE=edb
 HOST_USERNAME=monitor_user
 SERVER_NAME=db-server.example.com
 SSH_PORT=22
+SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
 ```
 
 2. Rotate the placeholder password immediately.

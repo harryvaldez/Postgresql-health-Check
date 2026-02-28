@@ -36,6 +36,7 @@ Usage:
     --host-username <ssh_user> \
     --server-name <server_or_ip> \
     [--ssh-port <port>] \
+        [--ssh-key <private_key_path>] \
     --db-username <db_user> \
     --db-password <db_password> \
     [--db-port <port>] \
@@ -59,6 +60,7 @@ fi
 SSH_USER="${HOST_USERNAME:-${SSH_USER:-}}"
 SSH_HOST="${SERVER_NAME:-${SSH_HOST:-}}"
 SSH_PORT="${SSH_PORT:-22}"
+SSH_KEY_FILE="${SSH_KEY_FILE:-}"
 
 DB_USERNAME="${DB_USERNAME:-${PGUSER:-enterprisedb}}"
 DB_PASSWORD="${DB_PASSWORD:-${PGPASSWORD:-}}"
@@ -78,6 +80,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --ssh-port)
             SSH_PORT="$2"
+            shift 2
+            ;;
+        --ssh-key|--ssh-key-file)
+            SSH_KEY_FILE="$2"
             shift 2
             ;;
         --db-username)
@@ -122,6 +128,11 @@ if [[ -z "$SSH_USER" ]]; then
     exit 1
 fi
 
+if [[ -n "$SSH_KEY_FILE" && ! -f "$SSH_KEY_FILE" ]]; then
+    echo "Error: SSH key file not found: $SSH_KEY_FILE" >&2
+    exit 1
+fi
+
 if [[ -z "$DB_HOST" ]]; then
     DB_HOST="$SSH_HOST"
 fi
@@ -160,7 +171,11 @@ fi
 
 run_ssh_cmd() {
     local cmd="$1"
-    ssh -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
+    if [[ -n "$SSH_KEY_FILE" ]]; then
+        ssh -i "$SSH_KEY_FILE" -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
+    else
+        ssh -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
+    fi
 }
 
 psql_query() {

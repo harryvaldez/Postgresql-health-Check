@@ -50,6 +50,7 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
       --host-username monitor_user \
       --server-name db-server.example.com \
       --ssh-port 22 \
+            --ssh-key /home/monitor_user/.ssh/id_rsa \
       --db-username edb_monitor_svc \
       --db-password 'your_secure_password' \
       --db-port 5444 \
@@ -61,6 +62,7 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
     HOST_USERNAME=monitor_user
     SERVER_NAME=db-server.example.com
     SSH_PORT=22
+    SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
 
     # Remote Database (DB Metrics via psql)
     DB_USERNAME=edb_monitor_svc
