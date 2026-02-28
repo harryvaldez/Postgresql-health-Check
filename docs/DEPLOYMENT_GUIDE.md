@@ -204,11 +204,19 @@ cat /tmp/edb_health_metrics.json | jq .
 ### Environment Variables (.env)
 
 ```ini
-# Database Configuration
-PGUSER=enterprisedb
-PGPASSWORD=your_secure_password_here
+# Remote Server (System Metrics via SSH)
+HOST_USERNAME=monitor_user
+SERVER_NAME=db-server.example.com
+SSH_PORT=22
+
+# Remote Database (DB Metrics via psql)
+DB_USERNAME=edb_monitor_svc
+DB_PASSWORD=your_secure_password_here
+DB_HOST=db-server.example.com
+DB_PORT=5444
 PGDATABASE=edb
-PGPORT=5444
+
+# Local client binary path (where script runs)
 PGBIN=/usr/edb/as9.6/bin
 SERVICE_NAME=edb-as-9.6
 
@@ -228,6 +236,19 @@ ERROR_LOG_PATTERNS="FATAL|ERROR|PANIC"
 # Patch Management Configuration
 PATCH_CHECK_ENABLED=true
 EDB_VERSION_CHECK=true
+```
+
+Run with explicit CLI parameters (optional when values are in `.env`):
+
+```bash
+./collect_metrics.sh \
+   --host-username monitor_user \
+   --server-name db-server.example.com \
+   --ssh-port 22 \
+   --db-username edb_monitor_svc \
+   --db-password 'your_secure_password_here' \
+   --db-port 5444 \
+   --db-name edb
 ```
 
 ### Cron Job Setup
@@ -257,10 +278,14 @@ After running the script:
 1. Update `.env` to use the service login created by the SQL script:
 
 ```ini
-PGUSER=edb_monitor_svc
-PGPASSWORD=CHANGE_ME_STRONG_PASSWORD
+DB_USERNAME=edb_monitor_svc
+DB_PASSWORD=CHANGE_ME_STRONG_PASSWORD
+DB_HOST=db-server.example.com
+DB_PORT=5444
 PGDATABASE=edb
-PGPORT=5444
+HOST_USERNAME=monitor_user
+SERVER_NAME=db-server.example.com
+SSH_PORT=22
 ```
 
 2. Rotate the placeholder password immediately.

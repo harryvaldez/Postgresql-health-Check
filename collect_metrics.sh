@@ -27,20 +27,119 @@ log_error() {
 
 log_msg "Starting EDB Health Check..."
 
+usage() {
+    cat <<'EOF'
+Usage:
+  ./collect_metrics.sh \
+    --host-username <ssh_user> \
+    --server-name <server_or_ip> \
+    [--ssh-port <port>] \
+    --db-username <db_user> \
+    --db-password <db_password> \
+    [--db-port <port>] \
+    [--db-host <db_host>] \
+    [--db-name <database_name>]
+
+Defaults:
+  --ssh-port: 22
+  --db-port: 5444
+  --db-host: same value as --server-name
+  --db-name: edb
+EOF
+}
+
 # Load environment variables
 if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-PGUSER="${PGUSER:-enterprisedb}"
-PGPORT="${PGPORT:-5444}" # EDB default port is often 5444
+# Remote connection settings (CLI args override env defaults)
+SSH_USER="${HOST_USERNAME:-${SSH_USER:-}}"
+SSH_HOST="${SERVER_NAME:-${SSH_HOST:-}}"
+SSH_PORT="${SSH_PORT:-22}"
+
+DB_USERNAME="${DB_USERNAME:-${PGUSER:-enterprisedb}}"
+DB_PASSWORD="${DB_PASSWORD:-${PGPASSWORD:-}}"
+DB_PORT="${DB_PORT:-${PGPORT:-5444}}"
 PGDATABASE="${PGDATABASE:-edb}"
-PGPASSWORD="${PGPASSWORD}" # Ensure PGPASSWORD is set in .env
+DB_HOST="${DB_HOST:-${PGHOST:-}}"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --host-username|--host-user)
+            SSH_USER="$2"
+            shift 2
+            ;;
+        --server-name|--host)
+            SSH_HOST="$2"
+            shift 2
+            ;;
+        --ssh-port)
+            SSH_PORT="$2"
+            shift 2
+            ;;
+        --db-username)
+            DB_USERNAME="$2"
+            shift 2
+            ;;
+        --db-password)
+            DB_PASSWORD="$2"
+            shift 2
+            ;;
+        --db-port)
+            DB_PORT="$2"
+            shift 2
+            ;;
+        --db-host)
+            DB_HOST="$2"
+            shift 2
+            ;;
+        --db-name)
+            PGDATABASE="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Error: Unknown argument '$1'" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z "$SSH_HOST" ]]; then
+    echo "Error: --server-name is required." >&2
+    exit 1
+fi
+
+if [[ -z "$SSH_USER" ]]; then
+    echo "Error: --host-username is required." >&2
+    exit 1
+fi
+
+if [[ -z "$DB_HOST" ]]; then
+    DB_HOST="$SSH_HOST"
+fi
+
+if [[ -z "$DB_USERNAME" || -z "$DB_PASSWORD" ]]; then
+    echo "Error: --db-username and --db-password are required." >&2
+    exit 1
+fi
+
+# Keep compatibility with downstream variable names
+PGUSER="$DB_USERNAME"
+PGPASSWORD="$DB_PASSWORD"
+PGPORT="$DB_PORT"
+PGHOST="$DB_HOST"
+
 PGBIN="${PGBIN:-/usr/edb/as9.6/bin}" # Adjust path if necessary
 PSQL="$PGBIN/edb-psql"
 SERVICE_NAME="${SERVICE_NAME:-edb-as-9.6}"
 LONG_QUERY_THRESHOLD="${LONG_QUERY_THRESHOLD:-5 minutes}"
-HOSTNAME=$(hostname)
+HOSTNAME="$SSH_HOST"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 OUTPUT_FILE="${OUTPUT_FILE:-/tmp/edb_health_metrics.json}"
 
@@ -57,6 +156,25 @@ if [ ! -f "$PSQL" ]; then
     fi
 fi
 
+run_ssh_cmd() {
+    local cmd="$1"
+    ssh -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
+}
+
+psql_query() {
+    local sql="$1"
+    PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$sql" 2>/dev/null
+}
+
+psql_query_t() {
+    local sql="$1"
+    PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -t -c "$sql" 2>/dev/null
+}
+
+psql_ping() {
+    PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -c "SELECT 1" >/dev/null 2>&1
+}
+
 # JSON Building Helper Functions
 # ------------------------------------------------------------------------------
 json_start() { echo "{"; }
@@ -71,25 +189,19 @@ json_comma() { echo ","; }
 # ------------------------------------------------------------------------------
 collect_system_metrics() {
     echo "\"system\": {"
-    
-    # Load Average
-    read -r load1 load5 load15 _ < /proc/loadavg
-    load1=${load1:-0}
-    load5=${load5:-0}
-    load15=${load15:-0}
-    echo "\"load_avg\": { \"1min\": $load1, \"5min\": $load5, \"15min\": $load15 },"
 
-    # Memory Usage (MB)
-    mem_total=$(free -m | grep Mem: | awk '{print $2}')
-    mem_used=$(free -m | grep Mem: | awk '{print $3}')
-    mem_free=$(free -m | grep Mem: | awk '{print $4}')
-    mem_total=${mem_total:-0}
-    mem_used=${mem_used:-0}
-    mem_free=${mem_free:-0}
-    echo "\"memory_mb\": { \"total\": $mem_total, \"used\": $mem_used, \"free\": $mem_free },"
+    # CPU Utilization Percent (remote)
+    cpu_util=$(run_ssh_cmd "vmstat 1 2 | tail -1 | awk '{print 100-\$15}'" 2>/dev/null | xargs)
+    cpu_util=${cpu_util:-0}
+    echo "\"cpu_util_percent\": $cpu_util,"
 
-    # Disk Usage (Root partition)
-    disk_usage=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
+    # Memory Utilization Percent (remote)
+    mem_util=$(run_ssh_cmd "free -m | awk '/^Mem:/ {if (\$2>0) printf \"%.2f\", (\$3/\$2)*100; else print 0}'" 2>/dev/null | xargs)
+    mem_util=${mem_util:-0}
+    echo "\"memory_util_percent\": $mem_util,"
+
+    # Disk Utilization Percent (/data filesystem, remote)
+    disk_usage=$(run_ssh_cmd "df -P /data 2>/dev/null | awk 'NR==2 {gsub(/%/,\"\",\$5); print \$5}'" 2>/dev/null | xargs)
     disk_usage=${disk_usage:-0}
     echo "\"disk_usage_percent\": $disk_usage"
     
@@ -102,11 +214,11 @@ collect_db_status() {
     echo "\"database_status\": {"
     
     # Service Status (Systemd)
-    if systemctl is-active --quiet "$SERVICE_NAME"; then
+    if run_ssh_cmd "systemctl is-active --quiet $SERVICE_NAME" >/dev/null 2>&1; then
         service_status="active"
     else
         # Try generic name if specific one fails
-        if systemctl is-active --quiet postgresql; then
+        if run_ssh_cmd "systemctl is-active --quiet postgresql" >/dev/null 2>&1; then
              service_status="active"
         else
              service_status="inactive"
@@ -115,7 +227,7 @@ collect_db_status() {
     echo "\"service_status\": \"$service_status\","
 
     # Connection Check
-    if $PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -c "SELECT 1" >/dev/null 2>&1; then
+    if psql_ping; then
         conn_status="success"
     else
         conn_status="failed"
@@ -130,32 +242,32 @@ collect_db_status() {
 collect_performance_metrics() {
     echo "\"performance\": {"
 
-    total_conns=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_activity;" 2>/dev/null | xargs)
+    total_conns=$(psql_query "SELECT count(*) FROM pg_stat_activity;" | xargs)
     total_conns=${total_conns:-0}
     echo "\"total_connections\": $total_conns,"
 
     # Active Connections
-    active_conns=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'active';" 2>/dev/null | xargs)
+    active_conns=$(psql_query "SELECT count(*) FROM pg_stat_activity WHERE state = 'active';" | xargs)
     active_conns=${active_conns:-0}
     echo "\"active_connections\": $active_conns,"
 
     # Idle Connections
-    idle_conns=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle';" 2>/dev/null | xargs)
+    idle_conns=$(psql_query "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle';" | xargs)
     idle_conns=${idle_conns:-0}
     echo "\"idle_connections\": $idle_conns,"
 
-    idle_in_tx_conns=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle in transaction';" 2>/dev/null | xargs)
+    idle_in_tx_conns=$(psql_query "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle in transaction';" | xargs)
     idle_in_tx_conns=${idle_in_tx_conns:-0}
     echo "\"idle_in_transaction_connections\": $idle_in_tx_conns,"
 
     # Long Running Queries
-    long_queries=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND now() - query_start > interval '$LONG_QUERY_THRESHOLD';" 2>/dev/null | xargs)
+    long_queries=$(psql_query "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND now() - query_start > interval '$LONG_QUERY_THRESHOLD';" | xargs)
     long_queries=${long_queries:-0}
     echo "\"long_running_queries_count\": $long_queries,"
     
     # Cache Hit Ratio
     # Fixed: Use standard formula (hits / (hits + reads)) and standard SQL functions
-    hit_ratio=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT ROUND(sum(heap_blks_hit)::numeric / NULLIF(sum(heap_blks_hit) + sum(heap_blks_read), 0) * 100, 2) FROM pg_statio_user_tables;" 2>/dev/null | xargs)
+    hit_ratio=$(psql_query "SELECT ROUND(sum(heap_blks_hit)::numeric / NULLIF(sum(heap_blks_hit) + sum(heap_blks_read), 0) * 100, 2) FROM pg_statio_user_tables;" | xargs)
     # Fallback for try_cast or div by zero
     if [[ -z "$hit_ratio" ]]; then hit_ratio=0; fi
     echo "\"cache_hit_ratio\": $hit_ratio"
@@ -189,7 +301,7 @@ collect_database_metrics() {
         ) t;
     "
 
-    db_stats=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$db_stats_query" 2>/dev/null)
+    db_stats=$(psql_query "$db_stats_query")
     if [[ -z "$db_stats" ]]; then db_stats="{}"; fi
     echo "\"stats\": $db_stats"
 
@@ -199,7 +311,7 @@ collect_database_metrics() {
 collect_lock_metrics() {
     echo "\"locks\": {"
 
-    waiting_count=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_activity WHERE wait_event IS NOT NULL;" 2>/dev/null | xargs)
+    waiting_count=$(psql_query "SELECT count(*) FROM pg_stat_activity WHERE wait_event IS NOT NULL;" | xargs)
     waiting_count=${waiting_count:-0}
     echo "\"waiting_sessions\": $waiting_count,"
 
@@ -220,7 +332,7 @@ collect_lock_metrics() {
             LIMIT 10
         ) t;
     "
-    waiters=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$waiters_query" 2>/dev/null)
+    waiters=$(psql_query "$waiters_query")
     if [[ -z "$waiters" ]]; then waiters="[]"; fi
     echo "\"top_waiters\": $waiters,"
 
@@ -250,7 +362,7 @@ collect_lock_metrics() {
             WHERE NOT bl.granted
         ) t;
     "
-    blocking_chains=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$blockers_query" 2>/dev/null)
+    blocking_chains=$(psql_query "$blockers_query")
     if [[ -z "$blocking_chains" ]]; then blocking_chains="[]"; fi
     echo "\"blocking_chains\": $blocking_chains"
 
@@ -276,7 +388,7 @@ collect_vacuum_metrics() {
             LIMIT 10
         ) t;
     "
-    dead_tuples=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$dead_tuples_query" 2>/dev/null)
+    dead_tuples=$(psql_query "$dead_tuples_query")
     if [[ -z "$dead_tuples" ]]; then dead_tuples="[]"; fi
     echo "\"top_dead_tuples\": $dead_tuples,"
 
@@ -295,7 +407,7 @@ collect_vacuum_metrics() {
             LIMIT 10
         ) t;
     "
-    freeze_risk=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$freeze_risk_query" 2>/dev/null)
+    freeze_risk=$(psql_query "$freeze_risk_query")
     if [[ -z "$freeze_risk" ]]; then freeze_risk="[]"; fi
     echo "\"freeze_risk\": $freeze_risk"
 
@@ -320,7 +432,7 @@ collect_wal_metrics() {
             FROM pg_stat_bgwriter
         ) t;
     "
-    bgwriter=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$bgwriter_query" 2>/dev/null)
+    bgwriter=$(psql_query "$bgwriter_query")
     if [[ -z "$bgwriter" ]]; then bgwriter="{}"; fi
     echo "\"bgwriter\": $bgwriter"
 
@@ -337,7 +449,7 @@ collect_storage_metrics() {
                 pg_size_pretty(pg_database_size(current_database())) AS database_size
         ) t;
     "
-    database_size=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$database_size_query" 2>/dev/null)
+    database_size=$(psql_query "$database_size_query")
     if [[ -z "$database_size" ]]; then database_size="{}"; fi
     echo "\"database_size\": $database_size,"
 
@@ -353,21 +465,21 @@ collect_storage_metrics() {
                OR n.nspname LIKE 'pg_toast_temp_%'
         ) t;
     "
-    temp_objects=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$temp_objects_query" 2>/dev/null)
+    temp_objects=$(psql_query "$temp_objects_query")
     if [[ -z "$temp_objects" ]]; then temp_objects="{}"; fi
     echo "\"temp_objects\": $temp_objects,"
 
     top_tables_query="
         select * from valdezha.mv_largest_tab;
     "
-    top_tables=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$top_tables_query" 2>/dev/null)
+    top_tables=$(psql_query "$top_tables_query")
     if [[ -z "$top_tables" ]]; then top_tables="[]"; fi
     echo "\"largest_tables\": $top_tables,"
 
     top_indexes_query="
     select * from valdezha.mv_largest_idx;
     "
-    top_indexes=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$top_indexes_query" 2>/dev/null)
+    top_indexes=$(psql_query "$top_indexes_query")
     if [[ -z "$top_indexes" ]]; then top_indexes="[]"; fi
     echo "\"largest_indexes\": $top_indexes"
 
@@ -379,12 +491,12 @@ collect_storage_metrics() {
 collect_replication_metrics() {
     echo "\"replication\": {"
     
-    is_in_recovery=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT pg_is_in_recovery();" 2>/dev/null | xargs)
+    is_in_recovery=$(psql_query "SELECT pg_is_in_recovery();" | xargs)
     if [[ -z "$is_in_recovery" ]]; then is_in_recovery="unknown"; fi
     echo "\"is_in_recovery\": \"$is_in_recovery\","
 
     if [ "$is_in_recovery" == "f" ]; then
-        replica_count=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT count(*) FROM pg_stat_replication;" 2>/dev/null | xargs)
+        replica_count=$(psql_query "SELECT count(*) FROM pg_stat_replication;" | xargs)
         replica_count=${replica_count:-0}
         echo "\"connected_replicas\": $replica_count,"
 
@@ -404,7 +516,7 @@ collect_replication_metrics() {
                 FROM pg_stat_replication
             ) t;
         "
-        replication_details=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$replication_details_query" 2>/dev/null)
+        replication_details=$(psql_query "$replication_details_query")
         if [[ -z "$replication_details" ]]; then replication_details="[]"; fi
         echo "\"replication_status\": $replication_details,"
 
@@ -418,11 +530,11 @@ collect_replication_metrics() {
                 FROM pg_replication_slots
             ) t;
         "
-        slots=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$slots_query" 2>/dev/null)
+        slots=$(psql_query "$slots_query")
         if [[ -z "$slots" ]]; then slots="[]"; fi
         echo "\"replication_slots\": $slots"
     else
-        last_xact_replay=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "SELECT COALESCE(EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp()))::int, 0);" 2>/dev/null | xargs)
+        last_xact_replay=$(psql_query "SELECT COALESCE(EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp()))::int, 0);" | xargs)
         last_xact_replay=${last_xact_replay:-0}
         echo "\"replication_lag_seconds\": $last_xact_replay"
     fi
@@ -436,11 +548,11 @@ collect_backup_metrics() {
     echo "\"backup\": {"
     
     # Check if archiving is enabled
-    archive_mode=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -t -c "SHOW archive_mode;" | xargs)
+    archive_mode=$(psql_query_t "SHOW archive_mode;" | xargs)
     echo "\"archive_mode\": \"$archive_mode\","
 
     # Check last failed archive time
-    last_failed=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -t -c "SELECT last_failed_time FROM pg_stat_archiver;" | xargs)
+    last_failed=$(psql_query_t "SELECT last_failed_time FROM pg_stat_archiver;" | xargs)
     # Handle empty result (NULL)
     if [[ "$last_failed" == "" ]]; then last_failed="null"; else last_failed="\"$last_failed\""; fi
     echo "\"last_failed_archive\": $last_failed"
@@ -460,7 +572,7 @@ collect_bloat_metrics() {
    SELECT * FROM valdezha.mv_tab_bloat;
     "
     
-    table_bloat=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$table_bloat_query" 2>/dev/null)
+    table_bloat=$(psql_query "$table_bloat_query")
     if [[ -z "$table_bloat" ]]; then table_bloat="[]"; fi
     echo "\"top_bloated_tables\": $table_bloat,"
 
@@ -470,7 +582,7 @@ collect_bloat_metrics() {
     select * from valdezha.mv_idx_bloat;
     "
     
-    index_bloat=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$index_bloat_query" 2>/dev/null)
+    index_bloat=$(psql_query "$index_bloat_query")
     if [[ -z "$index_bloat" ]]; then index_bloat="[]"; fi
     echo "\"large_indexes\": $index_bloat"
 
@@ -501,7 +613,7 @@ collect_config_metrics() {
         );
     "
     
-    config_json=$($PSQL -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$config_query" 2>/dev/null)
+    config_json=$(psql_query "$config_query")
     
     # Fallback if query fails (or json_object_agg not available, though it should be in 9.6)
     if [[ -z "$config_json" ]]; then config_json="{}"; fi
