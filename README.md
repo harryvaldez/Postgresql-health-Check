@@ -15,6 +15,7 @@ This project provides a comprehensive, automated monitoring solution for Enterpr
 -   **Server**: RHEL 7 VM in Azure.
 -   **Database**: EnterpriseDB Advanced Server 9.6.
 -   **Runtime**: Python 3 (required for JWT generation).
+-   **SSH Auth (if using password)**: `sshpass` must be installed on the machine running `collect_metrics.sh`.
 -   **n8n**: An n8n instance (self-hosted or cloud) accessible via HTTP/HTTPS.
 -   **API Keys**: OpenAI API Key (for analysis), Jira Cloud API Token.
 
@@ -50,7 +51,9 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
       --host-username monitor_user \
       --server-name db-server.example.com \
       --ssh-port 22 \
-            --ssh-key /home/monitor_user/.ssh/id_rsa \
+        --ssh-key /home/monitor_user/.ssh/id_rsa \
+        # OR use password auth (requires sshpass):
+        # --ssh-password 'your_ssh_password' \
       --db-username edb_monitor_svc \
       --db-password 'your_secure_password' \
       --db-port 5444 \
@@ -63,6 +66,8 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
     SERVER_NAME=db-server.example.com
     SSH_PORT=22
     SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
+    # Optional alternative to SSH key auth (requires sshpass)
+    # SSH_PASSWORD=your_ssh_password
 
     # Remote Database (DB Metrics via psql)
     DB_USERNAME=edb_monitor_svc

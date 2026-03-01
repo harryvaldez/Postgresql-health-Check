@@ -111,6 +111,7 @@ This comprehensive monitoring system provides automated, AI-driven analysis of E
   - `curl` (for webhook communication)
   - `jq` (optional, for JSON validation)
   - `systemctl` (for service status checks)
+   - `sshpass` (only if using SSH password authentication)
   - `edb-psql` or `psql` (for database queries)
 
 ### Network Requirements
@@ -193,6 +194,8 @@ cd /usr/local/bin/edb-monitor
    --server-name db-server.example.com \
    --ssh-port 22 \
    --ssh-key /home/monitor_user/.ssh/id_rsa \
+   # OR use password auth (requires sshpass):
+   # --ssh-password 'your_ssh_password' \
    --db-username edb_monitor_svc \
    --db-password 'your_secure_password_here' \
    --db-port 5444 \
@@ -206,6 +209,8 @@ cat /tmp/edb_health_metrics.json | jq .
    --host-username monitor_user \
    --server-name db-server.example.com \
    --ssh-key /home/monitor_user/.ssh/id_rsa \
+   # OR use password auth (requires sshpass):
+   # --ssh-password 'your_ssh_password' \
    --db-username edb_monitor_svc \
    --db-password 'your_secure_password_here'
 ```
@@ -222,6 +227,8 @@ HOST_USERNAME=monitor_user
 SERVER_NAME=db-server.example.com
 SSH_PORT=22
 SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
+# Optional alternative to SSH key auth (requires sshpass)
+# SSH_PASSWORD=your_ssh_password
 
 # Remote Database (DB Metrics via psql)
 DB_USERNAME=edb_monitor_svc
@@ -260,6 +267,8 @@ Run with explicit CLI parameters (optional when values are in `.env`):
    --server-name db-server.example.com \
    --ssh-port 22 \
    --ssh-key /home/monitor_user/.ssh/id_rsa \
+   # OR use password auth (requires sshpass):
+   # --ssh-password 'your_ssh_password' \
    --db-username edb_monitor_svc \
    --db-password 'your_secure_password_here' \
    --db-port 5444 \
@@ -302,6 +311,8 @@ HOST_USERNAME=monitor_user
 SERVER_NAME=db-server.example.com
 SSH_PORT=22
 SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
+# Optional alternative to SSH key auth (requires sshpass)
+# SSH_PASSWORD=your_ssh_password
 ```
 
 2. Rotate the placeholder password immediately.

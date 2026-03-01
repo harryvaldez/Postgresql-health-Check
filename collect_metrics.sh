@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # ==============================================================================
@@ -10,10 +11,16 @@
 # Determine script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+resolve_local_hostname() {
+    local resolved
+    resolved="$(hostname 2>/dev/null || uname -n 2>/dev/null || echo unknown-host)"
+    echo "$resolved"
+}
+
 # Logging Configuration
 LOG_DIR="${SCRIPT_DIR}/logs"
 mkdir -p "$LOG_DIR"
-LOG_HOSTNAME="${SERVER_NAME:-$(hostname)}"
+LOG_HOSTNAME="${SERVER_NAME:-$(resolve_local_hostname)}"
 LOG_HOSTNAME="$(echo "$LOG_HOSTNAME" | tr -cs '[:alnum:]_.-' '_')"
 LOG_FILE="${LOG_DIR}/${LOG_HOSTNAME}_execution_$(date +%Y-%m-%d).log"
 
@@ -27,8 +34,6 @@ log_error() {
     echo "$(date +'%Y-%m-%d %H:%M:%S') [ERROR] $msg" >> "$LOG_FILE"
 }
 
-log_msg "Starting EDB Health Check..."
-
 usage() {
     cat <<'EOF'
 Usage:
@@ -37,6 +42,7 @@ Usage:
     --server-name <server_or_ip> \
     [--ssh-port <port>] \
         [--ssh-key <private_key_path>] \
+        [--ssh-password <ssh_password>] \
     --db-username <db_user> \
     --db-password <db_password> \
     [--db-port <port>] \
@@ -51,9 +57,71 @@ Defaults:
 EOF
 }
 
+load_env_file() {
+    local env_file="$1"
+    local line
+    local key
+    local value
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%$'\r'}"
+
+        if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
+            continue
+        fi
+
+        if [[ "$line" =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+            key="${BASH_REMATCH[1]}"
+            value="${BASH_REMATCH[2]}"
+
+            if [[ "$value" =~ ^\".*\"$ ]]; then
+                value="${value:1:${#value}-2}"
+            elif [[ "$value" =~ ^\'.*\'$ ]]; then
+                value="${value:1:${#value}-2}"
+            fi
+
+            export "$key=$value"
+        fi
+    done < "$env_file"
+}
+
+normalize_ssh_key_path() {
+    local input_path="$1"
+    if [[ "$input_path" =~ ^([A-Za-z]):\\(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1],,}"
+        local rest="${BASH_REMATCH[2]}"
+        rest="${rest//\\//}"
+        echo "/${drive}/${rest}"
+    else
+        echo "$input_path"
+    fi
+}
+
+resolve_existing_ssh_key_path() {
+    local candidate
+    candidate="$(normalize_ssh_key_path "$1")"
+
+    if [[ -f "$candidate" ]]; then
+        echo "$candidate"
+        return 0
+    fi
+
+    if [[ "$candidate" =~ ^/([a-z])/(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1]}"
+        local rest="${BASH_REMATCH[2]}"
+        local wsl_candidate="/mnt/${drive}/${rest}"
+        if [[ -f "$wsl_candidate" ]]; then
+            echo "$wsl_candidate"
+            return 0
+        fi
+    fi
+
+    echo "$candidate"
+}
+
 # Load environment variables
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+    load_env_file .env
 fi
 
 # Remote connection settings (CLI args override env defaults)
@@ -61,6 +129,7 @@ SSH_USER="${HOST_USERNAME:-${SSH_USER:-}}"
 SSH_HOST="${SERVER_NAME:-${SSH_HOST:-}}"
 SSH_PORT="${SSH_PORT:-22}"
 SSH_KEY_FILE="${SSH_KEY_FILE:-}"
+SSH_PASSWORD="${SSH_PASSWORD:-}"
 
 DB_USERNAME="${DB_USERNAME:-${PGUSER:-enterprisedb}}"
 DB_PASSWORD="${DB_PASSWORD:-${PGPASSWORD:-}}"
@@ -84,6 +153,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --ssh-key|--ssh-key-file)
             SSH_KEY_FILE="$2"
+            shift 2
+            ;;
+        --ssh-password)
+            SSH_PASSWORD="$2"
             shift 2
             ;;
         --db-username)
@@ -128,6 +201,10 @@ if [[ -z "$SSH_USER" ]]; then
     exit 1
 fi
 
+if [[ -n "$SSH_KEY_FILE" ]]; then
+    SSH_KEY_FILE="$(resolve_existing_ssh_key_path "$SSH_KEY_FILE")"
+fi
+
 if [[ -n "$SSH_KEY_FILE" && ! -f "$SSH_KEY_FILE" ]]; then
     echo "Error: SSH key file not found: $SSH_KEY_FILE" >&2
     exit 1
@@ -142,6 +219,11 @@ if [[ -z "$DB_USERNAME" || -z "$DB_PASSWORD" ]]; then
     exit 1
 fi
 
+LOG_HOSTNAME="$SSH_HOST"
+LOG_HOSTNAME="$(echo "$LOG_HOSTNAME" | tr -cs '[:alnum:]_.-' '_')"
+LOG_FILE="${LOG_DIR}/${LOG_HOSTNAME}_execution_$(date +%Y-%m-%d).log"
+log_msg "Starting EDB Health Check..."
+
 # Keep compatibility with downstream variable names
 PGUSER="$DB_USERNAME"
 PGPASSWORD="$DB_PASSWORD"
@@ -150,46 +232,152 @@ PGHOST="$DB_HOST"
 
 PGBIN="${PGBIN:-/usr/edb/as9.6/bin}" # Adjust path if necessary
 PSQL="$PGBIN/edb-psql"
+REMOTE_PGBIN="${REMOTE_PGBIN:-$PGBIN}"
+if [[ "$REMOTE_PGBIN" =~ ^[A-Za-z]: || "$REMOTE_PGBIN" == *\\* ]]; then
+    REMOTE_PGBIN="/usr/edb/as9.6/bin"
+fi
+USE_REMOTE_PSQL="false"
+REMOTE_PSQL=""
+PSQL_CLIENT_READY="false"
+PSQL_CLIENT_ERROR_EMITTED="false"
+SSH_READY="unknown"
 SERVICE_NAME="${SERVICE_NAME:-edb-as-9.6}"
 LONG_QUERY_THRESHOLD="${LONG_QUERY_THRESHOLD:-5 minutes}"
 HOSTNAME="$SSH_HOST"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 OUTPUT_FILE="${OUTPUT_FILE:-/tmp/edb_health_metrics.json}"
 
-# Check if edb-psql exists, otherwise fall back to psql or try to find it
-if [ ! -f "$PSQL" ]; then
-    if command -v edb-psql &> /dev/null; then
-        PSQL="edb-psql"
-    elif command -v psql &> /dev/null; then
-        PSQL="psql"
-    else
-        log_error "Neither edb-psql nor psql found."
-        echo "Error: Neither edb-psql nor psql found." >&2
-        exit 1
-    fi
-fi
-
 run_ssh_cmd() {
     local cmd="$1"
+    local ssh_opts
+
+    ssh_opts=(-p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10)
+
     if [[ -n "$SSH_KEY_FILE" ]]; then
-        ssh -i "$SSH_KEY_FILE" -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
+        ssh -i "$SSH_KEY_FILE" "${ssh_opts[@]}" "$SSH_USER@$SSH_HOST" "$cmd"
+    elif [[ -n "$SSH_PASSWORD" ]]; then
+        if ! command -v sshpass >/dev/null 2>&1; then
+            echo "Error: sshpass is required for --ssh-password authentication." >&2
+            return 1
+        fi
+        SSHPASS="$SSH_PASSWORD" sshpass -e ssh -o BatchMode=no -p "$SSH_PORT" -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
     else
-        ssh -p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
+        ssh "${ssh_opts[@]}" "$SSH_USER@$SSH_HOST" "$cmd"
     fi
+}
+
+ensure_ssh_connectivity() {
+    if [[ "$SSH_READY" == "true" ]]; then
+        return 0
+    fi
+
+    if run_ssh_cmd "echo SSH_OK" >/dev/null 2>&1; then
+        SSH_READY="true"
+        return 0
+    fi
+
+    SSH_READY="false"
+    return 1
+}
+
+ensure_psql_client() {
+    if [[ "$PSQL_CLIENT_READY" == "true" ]]; then
+        return 0
+    fi
+
+    if [ -f "$PSQL" ]; then
+        PSQL_CLIENT_READY="true"
+        return 0
+    fi
+
+    if command -v edb-psql &> /dev/null; then
+        PSQL="edb-psql"
+        PSQL_CLIENT_READY="true"
+        return 0
+    fi
+
+    if command -v psql &> /dev/null; then
+        PSQL="psql"
+        PSQL_CLIENT_READY="true"
+        return 0
+    fi
+
+    if ensure_ssh_connectivity; then
+        REMOTE_PSQL=$(run_ssh_cmd "bash -lc 'if [ -x \"$REMOTE_PGBIN/edb-psql\" ]; then echo \"$REMOTE_PGBIN/edb-psql\"; elif command -v edb-psql >/dev/null 2>&1; then command -v edb-psql; elif command -v psql >/dev/null 2>&1; then command -v psql; elif [ -x /usr/edb/as9.6/bin/edb-psql ]; then echo /usr/edb/as9.6/bin/edb-psql; elif [ -x /usr/bin/psql ]; then echo /usr/bin/psql; fi'" 2>/dev/null | head -n 1 | xargs)
+    else
+        REMOTE_PSQL=""
+    fi
+
+    if [[ -n "$REMOTE_PSQL" ]]; then
+        USE_REMOTE_PSQL="true"
+        PSQL_CLIENT_READY="true"
+        log_msg "Using remote psql client over SSH: $REMOTE_PSQL"
+        return 0
+    fi
+
+    if [[ "$PSQL_CLIENT_ERROR_EMITTED" != "true" ]]; then
+        if [[ "$SSH_READY" == "false" ]]; then
+            log_error "SSH connectivity failed to $SSH_USER@$SSH_HOST:$SSH_PORT. Cannot check remote psql."
+            echo "Error: SSH connectivity/auth failed to $SSH_USER@$SSH_HOST:$SSH_PORT (cannot check remote psql)." >&2
+            echo "Hint: verify VPN/network route, NSG/firewall for port $SSH_PORT, remote username, and SSH auth method (key path/permissions or password with sshpass)." >&2
+        else
+            log_error "Neither local nor remote edb-psql/psql found."
+            echo "Error: Neither local nor remote edb-psql/psql found." >&2
+        fi
+        PSQL_CLIENT_ERROR_EMITTED="true"
+    fi
+    return 1
+}
+
+remote_psql_query() {
+    local mode="$1"
+    local sql="$2"
+    local psql_opts
+    local esc_pass esc_host esc_user esc_db esc_port esc_psql
+
+    if [[ "$mode" == "t" ]]; then
+        psql_opts="-t"
+    else
+        psql_opts="-A -t"
+    fi
+
+    esc_pass=$(printf '%q' "$PGPASSWORD")
+    esc_host=$(printf '%q' "$PGHOST")
+    esc_user=$(printf '%q' "$PGUSER")
+    esc_db=$(printf '%q' "$PGDATABASE")
+    esc_port=$(printf '%q' "$PGPORT")
+    esc_psql=$(printf '%q' "$REMOTE_PSQL")
+
+    run_ssh_cmd "PGPASSWORD=$esc_pass $esc_psql -h $esc_host -U $esc_user -d $esc_db -p $esc_port $psql_opts -f -" <<< "$sql" 2>/dev/null
 }
 
 psql_query() {
     local sql="$1"
-    PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$sql" 2>/dev/null
+    ensure_psql_client || return 1
+    if [[ "$USE_REMOTE_PSQL" == "true" ]]; then
+        remote_psql_query "at" "$sql"
+    else
+        PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -A -t -c "$sql" 2>/dev/null
+    fi
 }
 
 psql_query_t() {
     local sql="$1"
-    PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -t -c "$sql" 2>/dev/null
+    ensure_psql_client || return 1
+    if [[ "$USE_REMOTE_PSQL" == "true" ]]; then
+        remote_psql_query "t" "$sql"
+    else
+        PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -t -c "$sql" 2>/dev/null
+    fi
 }
 
 psql_ping() {
-    PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -c "SELECT 1" >/dev/null 2>&1
+    ensure_psql_client || return 1
+    if [[ "$USE_REMOTE_PSQL" == "true" ]]; then
+        remote_psql_query "at" "SELECT 1" >/dev/null 2>&1
+    else
+        PGPASSWORD="$PGPASSWORD" "$PSQL" -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -p "$PGPORT" -c "SELECT 1" >/dev/null 2>&1
+    fi
 }
 
 # JSON Building Helper Functions
@@ -642,6 +830,10 @@ collect_config_metrics() {
 
 # Main Execution
 # ------------------------------------------------------------------------------
+if ! ensure_psql_client; then
+    exit 1
+fi
+
 {
     json_start
     echo "\"timestamp\": \"$TIMESTAMP\","
