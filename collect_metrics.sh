@@ -97,6 +97,23 @@ normalize_ssh_key_path() {
     fi
 }
 
+normalize_windows_path() {
+    local input_path="$1"
+    if [[ "$input_path" =~ ^([A-Za-z]):\\(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1],,}"
+        local rest="${BASH_REMATCH[2]}"
+        rest="${rest//\\//}"
+
+        if [[ -d "/mnt/$drive" ]]; then
+            echo "/mnt/${drive}/${rest}"
+        else
+            echo "/${drive}/${rest}"
+        fi
+    else
+        echo "$input_path"
+    fi
+}
+
 resolve_existing_ssh_key_path() {
     local candidate
     candidate="$(normalize_ssh_key_path "$1")"
@@ -117,6 +134,105 @@ resolve_existing_ssh_key_path() {
     fi
 
     echo "$candidate"
+}
+
+resolve_plink_binary() {
+    local plink_path=""
+
+    if [[ -n "$PLINK_PATH" && -f "$PLINK_PATH" ]]; then
+        echo "$PLINK_PATH"
+        return 0
+    fi
+
+    if command -v plink >/dev/null 2>&1; then
+        command -v plink
+        return 0
+    fi
+
+    if [[ -f "/c/Program Files/PuTTY/plink.exe" ]]; then
+        echo "/c/Program Files/PuTTY/plink.exe"
+        return 0
+    fi
+
+    if [[ -f "/mnt/c/Program Files/PuTTY/plink.exe" ]]; then
+        echo "/mnt/c/Program Files/PuTTY/plink.exe"
+        return 0
+    fi
+
+    return 1
+}
+
+to_windows_path() {
+    local input_path="$1"
+
+    if [[ "$input_path" =~ ^/mnt/([a-zA-Z])/(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1]^}"
+        local rest="${BASH_REMATCH[2]}"
+        rest="${rest//\//\\}"
+        echo "${drive}:\\${rest}"
+        return 0
+    fi
+
+    if [[ "$input_path" =~ ^/([a-zA-Z])/(.*)$ ]]; then
+        local drive="${BASH_REMATCH[1]^}"
+        local rest="${BASH_REMATCH[2]}"
+        rest="${rest//\//\\}"
+        echo "${drive}:\\${rest}"
+        return 0
+    fi
+
+    echo "$input_path"
+}
+
+run_plink_via_powershell() {
+    local plink_path="$1"
+    local plink_key="$2"
+    local cmd="$3"
+    local plink_path_s
+    local plink_key_s
+    local ps_host
+    local ps_port
+    local ps_user
+    local ps_target
+    local cmd_s
+    local ps_script
+
+    escape_for_powershell() {
+        local input="$1"
+        printf '%s' "$input" | base64 | tr -d '\r\n'
+    }
+
+    ps_host="$(escape_for_powershell "$SSH_HOST")"
+    ps_port="$(escape_for_powershell "$SSH_PORT")"
+    ps_user="$(escape_for_powershell "$SSH_USER")"
+    plink_path_s="$(escape_for_powershell "$plink_path")"
+    plink_key_s="$(escape_for_powershell "$plink_key")"
+    cmd_s="$(escape_for_powershell "$cmd")"
+    ps_target="${ps_user}@${ps_host}"
+
+    ps_script="\$ErrorActionPreference='Stop'; \$enc=[System.Text.Encoding]::UTF8; \$plink=\$enc.GetString([System.Convert]::FromBase64String('${plink_path_s}')); \$key=\$enc.GetString([System.Convert]::FromBase64String('${plink_key_s}')); \$host=\$enc.GetString([System.Convert]::FromBase64String('${ps_host}')); \$port=\$enc.GetString([System.Convert]::FromBase64String('${ps_port}')); \$user=\$enc.GetString([System.Convert]::FromBase64String('${ps_user}')); \$remote=\$enc.GetString([System.Convert]::FromBase64String('${cmd_s}')); \$target=\$user + '@' + \$host; & \$plink -batch -P \$port -i \$key \$target \$remote; exit \$LASTEXITCODE"
+
+    if command -v powershell.exe >/dev/null 2>&1; then
+        powershell.exe -NoProfile -NonInteractive -Command "$ps_script"
+        return $?
+    fi
+
+    if command -v pwsh.exe >/dev/null 2>&1; then
+        pwsh.exe -NoProfile -NonInteractive -Command "$ps_script"
+        return $?
+    fi
+
+    if command -v powershell >/dev/null 2>&1; then
+        powershell -NoProfile -NonInteractive -Command "$ps_script"
+        return $?
+    fi
+
+    if command -v pwsh >/dev/null 2>&1; then
+        pwsh -NoProfile -NonInteractive -Command "$ps_script"
+        return $?
+    fi
+
+    return 127
 }
 
 # Load environment variables
@@ -246,19 +362,64 @@ LONG_QUERY_THRESHOLD="${LONG_QUERY_THRESHOLD:-5 minutes}"
 HOSTNAME="$SSH_HOST"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 OUTPUT_FILE="${OUTPUT_FILE:-/tmp/edb_health_metrics.json}"
+OUTPUT_FILE="$(normalize_windows_path "$OUTPUT_FILE")"
 
 run_ssh_cmd() {
     local cmd="$1"
     local ssh_opts
+    local plink_bin
+    local plink_key
+    local rc
+    local askpass_script
+    local ssh_exit
 
     ssh_opts=(-p "$SSH_PORT" -o BatchMode=yes -o ConnectTimeout=10)
 
     if [[ -n "$SSH_KEY_FILE" ]]; then
+        if [[ "$SSH_KEY_FILE" =~ \.ppk$ ]] && plink_bin="$(resolve_plink_binary)"; then
+            plink_key="$(to_windows_path "$SSH_KEY_FILE")"
+
+            if "$plink_bin" -V >/dev/null 2>&1; then
+                "$plink_bin" -batch -P "$SSH_PORT" -i "$plink_key" "$SSH_USER@$SSH_HOST" "$cmd"
+                return $?
+            fi
+
+            run_plink_via_powershell "$plink_bin" "$plink_key" "$cmd"
+            rc=$?
+
+            if [[ $rc -eq 0 ]]; then
+                return 0
+            fi
+
+            if [[ $rc -ne 127 ]]; then
+                return $rc
+            fi
+
+            echo "Error: Found plink at '$plink_bin' but this shell cannot execute it, and PowerShell bridge is unavailable." >&2
+            echo "Hint: this is usually WSL with Windows interop disabled. Convert .ppk to OpenSSH key or run from a shell that can execute plink." >&2
+            return 1
+        fi
         ssh -i "$SSH_KEY_FILE" "${ssh_opts[@]}" "$SSH_USER@$SSH_HOST" "$cmd"
     elif [[ -n "$SSH_PASSWORD" ]]; then
         if ! command -v sshpass >/dev/null 2>&1; then
-            echo "Error: sshpass is required for --ssh-password authentication." >&2
-            return 1
+            if ! command -v setsid >/dev/null 2>&1; then
+                echo "Error: Password authentication requires sshpass or setsid (for SSH_ASKPASS fallback)." >&2
+                return 1
+            fi
+
+            askpass_script="$(mktemp)"
+            cat > "$askpass_script" <<'EOF'
+#!/bin/sh
+printf '%s\n' "${SSH_ASKPASS_PASSWORD:-}"
+EOF
+            chmod 700 "$askpass_script"
+
+            DISPLAY="${DISPLAY:-:0}" SSH_ASKPASS="$askpass_script" SSH_ASKPASS_REQUIRE=force SSH_ASKPASS_PASSWORD="$SSH_PASSWORD" \
+                setsid ssh -o BatchMode=no -o PubkeyAuthentication=no -o PreferredAuthentications=password,keyboard-interactive \
+                -p "$SSH_PORT" -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd" < /dev/null
+            ssh_exit=$?
+            rm -f "$askpass_script"
+            return $ssh_exit
         fi
         SSHPASS="$SSH_PASSWORD" sshpass -e ssh -o BatchMode=no -p "$SSH_PORT" -o ConnectTimeout=10 "$SSH_USER@$SSH_HOST" "$cmd"
     else
@@ -271,7 +432,7 @@ ensure_ssh_connectivity() {
         return 0
     fi
 
-    if run_ssh_cmd "echo SSH_OK" >/dev/null 2>&1; then
+    if run_ssh_cmd "echo SSH_OK" >/dev/null; then
         SSH_READY="true"
         return 0
     fi

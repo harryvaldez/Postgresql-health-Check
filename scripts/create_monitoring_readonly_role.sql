@@ -11,30 +11,31 @@ BEGIN
     END IF;
 
     -- Service login used by collect_metrics.sh (PGUSER)
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'edb_monitor_svc') THEN
-        CREATE ROLE edb_monitor_svc LOGIN;
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'n8n_dbmonitor') THEN
+        CREATE ROLE n8n_dbmonitor LOGIN;
     END IF;
 END
 $$;
 
 -- Set service account password (replace before running in production)
-ALTER ROLE edb_monitor_svc WITH PASSWORD 'CHANGE_ME_STRONG_PASSWORD';
+\set monitor_password 'CHANGE_ME_STRONG_PASSWORD'
+ALTER ROLE n8n_dbmonitor WITH PASSWORD :'monitor_password';
 
-GRANT edb_monitor_ro TO edb_monitor_svc;
+GRANT edb_monitor_ro TO n8n_dbmonitor;
 
 -- ==========================================================================
 -- 2) Database-level access (default DB in script is "edb")
 -- ===========================================================================
-GRANT CONNECT ON DATABASE edb TO edb_monitor_ro;
+GRANT CONNECT ON DATABASE edb TO n8n_dbmonitor;
 
 \connect edb
 
 -- ==========================================================================
 -- 3) Schema and object grants needed by collect_metrics.sh
 -- ===========================================================================
-GRANT USAGE ON SCHEMA pg_catalog TO edb_monitor_ro;
-GRANT USAGE ON SCHEMA public TO edb_monitor_ro;
-GRANT USAGE ON SCHEMA valdezha TO edb_monitor_ro;
+GRANT USAGE ON SCHEMA pg_catalog TO n8n_dbmonitor;
+GRANT USAGE ON SCHEMA public TO n8n_dbmonitor;
+GRANT USAGE ON SCHEMA valdezha TO n8n_dbmonitor;
 
 -- System catalogs/views referenced by queries
 GRANT SELECT ON
@@ -56,18 +57,18 @@ GRANT SELECT ON
     valdezha.mv_largest_idx,
     valdezha.mv_tab_bloat,
     valdezha.mv_idx_bloat
-TO edb_monitor_ro;
+TO n8n_dbmonitor;
 
 -- ==========================================================================
 -- 4) Optional hardening
 -- ===========================================================================
 -- Keep this account read-only at SQL level.
-ALTER ROLE edb_monitor_svc NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
+ALTER ROLE n8n_dbmonitor NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
 
 -- ==========================================================================
 -- 5) Validation checks
 -- ===========================================================================
--- Run these as edb_monitor_svc to verify expected access.
+-- Run these as n8n_dbmonitor to verify expected access.
 -- SELECT 1;
 -- SELECT count(*) FROM pg_stat_activity;
 -- SELECT * FROM valdezha.mv_largest_tab LIMIT 1;
