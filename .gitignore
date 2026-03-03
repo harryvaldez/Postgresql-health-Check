@@ -18,6 +18,7 @@ node_modules/
 htmlcov/
 coverage.xml
 Thumbs.db
+edb_health_metrics.json
 edb_health_workflow*.json1
 edb_health_workflow*.json2
 edb_health_workflow (*).json*
