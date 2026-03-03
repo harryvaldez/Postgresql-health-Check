@@ -126,7 +126,7 @@ Webhook → Parse Data → Split Data
 
 ## Configuration
 
-### Environment Variables
+### Environment Variables (.env)
 
 ```ini
 # Database
@@ -137,13 +137,19 @@ PGPORT=5444
 PGBIN=/usr/edb/as9.6/bin
 SERVICE_NAME=edb-as-9.6
 
-# Monitoring
+# Monitoring Configuration
 OUTPUT_FILE=/tmp/edb_health_metrics.json
 LONG_QUERY_THRESHOLD="5 minutes"
 
-# Webhook
+# Webhook Configuration
 WEBHOOK_URL=https://your-n8n-instance.com/webhook/edb-health-check
-N8N_JWT_SECRET=your_secret_minimum_32_chars
+N8N_JWT_SECRET=your_jwt_secret_here_minimum_32_characters
+WEBHOOK_MAX_RETRIES=3
+WEBHOOK_INITIAL_BACKOFF_SEC=5
+WEBHOOK_MAX_BACKOFF_SEC=30
+WEBHOOK_CONNECT_TIMEOUT_SEC=10
+WEBHOOK_REQUEST_TIMEOUT_SEC=120
+WEBHOOK_ENABLE_COMPACT_FALLBACK=true
 
 # Enhanced Features
 LOG_DIR_EDB=/var/log/edb/as9.6

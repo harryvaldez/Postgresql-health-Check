@@ -636,7 +636,136 @@ collect_performance_metrics() {
     hit_ratio=$(psql_query "SELECT ROUND(sum(heap_blks_hit)::numeric / NULLIF(sum(heap_blks_hit) + sum(heap_blks_read), 0) * 100, 2) FROM pg_statio_user_tables;" | xargs)
     # Fallback for try_cast or div by zero
     if [[ -z "$hit_ratio" ]]; then hit_ratio=0; fi
-    echo "\"cache_hit_ratio\": $hit_ratio"
+    echo "\"cache_hit_ratio\": $hit_ratio,"
+
+    # Checkpoint & WAL Stress Rates
+    wal_stress_query="
+        SELECT row_to_json(t) FROM (
+            SELECT
+                checkpoints_timed,
+                checkpoints_req,
+                ROUND((checkpoints_req::numeric / NULLIF(checkpoints_timed + checkpoints_req, 0)) * 100, 2) AS requested_checkpoint_ratio_pct,
+                ROUND((buffers_backend::numeric / NULLIF(buffers_checkpoint + buffers_clean + buffers_backend, 0)) * 100, 2) AS backend_write_pressure_pct,
+                ROUND((checkpoint_write_time::numeric / NULLIF(checkpoints_timed + checkpoints_req, 0)), 2) AS checkpoint_write_time_ms_per_checkpoint,
+                ROUND((checkpoint_sync_time::numeric / NULLIF(checkpoints_timed + checkpoints_req, 0)), 2) AS checkpoint_sync_time_ms_per_checkpoint
+            FROM pg_stat_bgwriter
+        ) t;
+    "
+    wal_stress=$(psql_query "$wal_stress_query")
+    if [[ -z "$wal_stress" ]]; then wal_stress="{}"; fi
+    echo "\"wal_stress\": $wal_stress,"
+
+    # Autovacuum Effectiveness
+    autovac_effectiveness_query="
+        SELECT row_to_json(t) FROM (
+            SELECT
+                COUNT(*) FILTER (WHERE n_dead_tup > 0) AS tables_with_dead_tuples,
+                COUNT(*) FILTER (WHERE n_dead_tup > GREATEST(n_live_tup, 1) * 0.2) AS tables_dead_tuple_ratio_over_20pct,
+                COUNT(*) FILTER (WHERE last_autovacuum IS NULL) AS tables_never_autovacuumed,
+                COALESCE(SUM(n_dead_tup), 0) AS total_dead_tuples,
+                COALESCE(SUM(n_live_tup), 0) AS total_live_tuples,
+                ROUND((COALESCE(SUM(n_dead_tup), 0)::numeric / NULLIF(COALESCE(SUM(n_live_tup), 0) + COALESCE(SUM(n_dead_tup), 0), 0)) * 100, 2) AS global_dead_tuple_ratio_pct,
+                ROUND((AVG(EXTRACT(EPOCH FROM (now() - last_autovacuum))) FILTER (WHERE last_autovacuum IS NOT NULL))::numeric, 2) AS avg_seconds_since_last_autovacuum
+            FROM pg_stat_user_tables
+        ) t;
+    "
+    autovac_effectiveness=$(psql_query "$autovac_effectiveness_query")
+    if [[ -z "$autovac_effectiveness" ]]; then autovac_effectiveness="{}"; fi
+    echo "\"autovacuum_effectiveness\": $autovac_effectiveness,"
+
+    # Lock Contention Severity + Longest Lock Wait
+    waiting_sessions_perf=$(psql_query "SELECT count(*) FROM pg_stat_activity WHERE wait_event IS NOT NULL;" | xargs)
+    waiting_sessions_perf=${waiting_sessions_perf:-0}
+
+    longest_lock_wait_seconds=$(psql_query "SELECT COALESCE(MAX(EXTRACT(EPOCH FROM (now() - query_start))::int), 0) FROM pg_stat_activity WHERE wait_event IS NOT NULL;" | xargs)
+    longest_lock_wait_seconds=${longest_lock_wait_seconds:-0}
+
+    if [[ "$longest_lock_wait_seconds" -ge 300 || "$waiting_sessions_perf" -ge 20 ]]; then
+        lock_severity="critical"
+    elif [[ "$longest_lock_wait_seconds" -ge 120 || "$waiting_sessions_perf" -ge 10 ]]; then
+        lock_severity="high"
+    elif [[ "$longest_lock_wait_seconds" -ge 30 || "$waiting_sessions_perf" -ge 3 ]]; then
+        lock_severity="medium"
+    else
+        lock_severity="low"
+    fi
+
+    echo "\"waiting_sessions_for_severity\": $waiting_sessions_perf,"
+    echo "\"longest_lock_wait_seconds\": $longest_lock_wait_seconds,"
+    echo "\"lock_contention_severity\": \"$lock_severity\","
+
+    # Per-Database Health Split
+    per_database_health_query="
+        SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json) FROM (
+            SELECT
+                datname,
+                numbackends,
+                xact_commit,
+                xact_rollback,
+                ROUND((xact_rollback::numeric / NULLIF(xact_commit + xact_rollback, 0)) * 100, 2) AS rollback_ratio_pct,
+                blks_read,
+                blks_hit,
+                ROUND((blks_hit::numeric / NULLIF(blks_hit + blks_read, 0)) * 100, 2) AS cache_hit_ratio_pct,
+                deadlocks,
+                temp_files,
+                temp_bytes,
+                stats_reset
+            FROM pg_stat_database
+            WHERE datname NOT IN ('template0', 'template1')
+            ORDER BY temp_bytes DESC NULLS LAST, deadlocks DESC NULLS LAST
+        ) t;
+    "
+    per_database_health=$(psql_query "$per_database_health_query")
+    if [[ -z "$per_database_health" ]]; then per_database_health="[]"; fi
+    echo "\"per_database_health\": $per_database_health,"
+
+    # Query Performance (pg_stat_statements if installed)
+    has_pg_stat_statements=$(psql_query "SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements');" | xargs)
+    has_pg_stat_statements=${has_pg_stat_statements:-f}
+
+    if [[ "$has_pg_stat_statements" == "t" ]]; then
+        query_perf_query="
+            SELECT row_to_json(t) FROM (
+                SELECT
+                    s.total_calls,
+                    s.total_exec_time_ms,
+                    ROUND((s.total_exec_time_ms / NULLIF(s.total_calls, 0)), 2) AS avg_exec_time_ms,
+                    q.top_queries
+                FROM (
+                    SELECT
+                        COALESCE(SUM(calls), 0) AS total_calls,
+                        COALESCE(SUM(total_time), 0)::numeric AS total_exec_time_ms
+                    FROM pg_stat_statements
+                ) s,
+                (
+                    SELECT COALESCE(json_agg(row_to_json(x)), '[]'::json) AS top_queries
+                    FROM (
+                        SELECT
+                            userid,
+                            dbid,
+                            calls,
+                            ROUND(total_time::numeric, 2) AS total_time_ms,
+                            ROUND((total_time / NULLIF(calls, 0))::numeric, 2) AS mean_time_ms,
+                            rows,
+                            shared_blks_hit,
+                            shared_blks_read,
+                            temp_blks_read,
+                            temp_blks_written,
+                            query
+                        FROM pg_stat_statements
+                        ORDER BY total_time DESC
+                        LIMIT 10
+                    ) x
+                ) q
+            ) t;
+        "
+        query_performance=$(psql_query "$query_perf_query")
+        if [[ -z "$query_performance" ]]; then query_performance="{}"; fi
+    else
+        query_performance='{"available": false, "reason": "pg_stat_statements extension not installed"}'
+    fi
+
+    echo "\"query_performance\": $query_performance"
 
     echo "},"
 }
@@ -1091,19 +1220,95 @@ except Exception as e:
              # Send data to webhook
              log_msg "Sending metrics to webhook..."
              echo "Sending metrics to webhook..." >&2
+             WEBHOOK_MAX_RETRIES=${WEBHOOK_MAX_RETRIES:-3}
+             WEBHOOK_INITIAL_BACKOFF_SEC=${WEBHOOK_INITIAL_BACKOFF_SEC:-5}
+             WEBHOOK_MAX_BACKOFF_SEC=${WEBHOOK_MAX_BACKOFF_SEC:-30}
+             WEBHOOK_CONNECT_TIMEOUT_SEC=${WEBHOOK_CONNECT_TIMEOUT_SEC:-10}
+             WEBHOOK_REQUEST_TIMEOUT_SEC=${WEBHOOK_REQUEST_TIMEOUT_SEC:-120}
+             WEBHOOK_ENABLE_COMPACT_FALLBACK=${WEBHOOK_ENABLE_COMPACT_FALLBACK:-true}
+
              response_file=$(mktemp)
-             response=$(curl -s -o "$response_file" -w "%{http_code}" -X POST "$WEBHOOK_URL" \
-                -H "Content-Type: application/json" \
-                -H "User-Agent: EDB-Monitor/1.0" \
-                -H "Authorization: Bearer $JWT_TOKEN" \
-                -d @"$OUTPUT_FILE")
-             
-             if [[ "$response" == "200" ]]; then
+             response="000"
+             response_body=""
+             backoff_sec=$WEBHOOK_INITIAL_BACKOFF_SEC
+             delivery_ok="false"
+
+             send_webhook_payload() {
+                 local payload_file="$1"
+                 curl -s -o "$response_file" -w "%{http_code}" -X POST "$WEBHOOK_URL" \
+                    --connect-timeout "$WEBHOOK_CONNECT_TIMEOUT_SEC" \
+                    --max-time "$WEBHOOK_REQUEST_TIMEOUT_SEC" \
+                    -H "Content-Type: application/json" \
+                    -H "User-Agent: EDB-Monitor/1.0" \
+                    -H "Authorization: Bearer $JWT_TOKEN" \
+                    -d @"$payload_file"
+             }
+
+             for ((attempt=1; attempt<=WEBHOOK_MAX_RETRIES; attempt++)); do
+                 response=$(send_webhook_payload "$OUTPUT_FILE")
+                 response_body=$(cat "$response_file" 2>/dev/null | head -c 2000)
+
+                 if [[ "$response" =~ ^2[0-9][0-9]$ ]]; then
+                     delivery_ok="true"
+                     break
+                 fi
+
+                if (( attempt < WEBHOOK_MAX_RETRIES )) && [[ "$response" =~ ^(000|408|429|500|502|503|504|524)$ ]]; then
+                     log_error "Webhook attempt $attempt/$WEBHOOK_MAX_RETRIES failed with HTTP $response. Retrying in ${backoff_sec}s."
+                     sleep "$backoff_sec"
+                     backoff_sec=$(( backoff_sec * 2 ))
+                     if (( backoff_sec > WEBHOOK_MAX_BACKOFF_SEC )); then
+                         backoff_sec=$WEBHOOK_MAX_BACKOFF_SEC
+                     fi
+                 else
+                     break
+                 fi
+             done
+
+             if [[ "$delivery_ok" != "true" ]] && [[ "$WEBHOOK_ENABLE_COMPACT_FALLBACK" == "true" ]] && [[ "$response" =~ ^(000|408|429|500|502|503|504|524)$ ]]; then
+                 compact_payload_file=$(mktemp)
+                 compact_output=$($PYTHON_CMD -c "
+import io, json, sys
+src = '$OUTPUT_FILE'
+dst = '$compact_payload_file'
+with io.open(src, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+compact = {
+    'timestamp': data.get('timestamp'),
+    'hostname': data.get('hostname'),
+    'database_status': data.get('database_status', {}),
+    'performance': {
+        'total_connections': data.get('performance', {}).get('total_connections'),
+        'active_connections': data.get('performance', {}).get('active_connections'),
+        'long_running_queries_count': data.get('performance', {}).get('long_running_queries_count'),
+        'cache_hit_ratio': data.get('performance', {}).get('cache_hit_ratio'),
+        'lock_contention_severity': data.get('performance', {}).get('lock_contention_severity')
+    },
+    'summary_only': True
+}
+
+with io.open(dst, 'w', encoding='utf-8') as f:
+    json.dump(compact, f, separators=(',', ':'))
+print('ok')
+" 2>&1)
+
+                 if [[ "$compact_output" == "ok" ]]; then
+                     response=$(send_webhook_payload "$compact_payload_file")
+                     response_body=$(cat "$response_file" 2>/dev/null | head -c 2000)
+                     if [[ "$response" =~ ^2[0-9][0-9]$ ]]; then
+                         delivery_ok="true"
+                         log_msg "Successfully sent compact fallback metrics to webhook after timeout-class failures."
+                     fi
+                 fi
+                 rm -f "$compact_payload_file" 2>/dev/null || true
+             fi
+
+             if [[ "$delivery_ok" == "true" ]]; then
                  log_msg "Successfully sent metrics to webhook."
                  echo "Successfully sent metrics to webhook." >&2
              else
-                 response_body=$(cat "$response_file" 2>/dev/null | head -c 2000)
-                 log_error "Failed to send metrics. HTTP Status: $response. Response: $response_body"
+                 log_error "Failed to send metrics after retries. HTTP Status: $response. Response: $response_body"
                  echo "Failed to send metrics. HTTP Status: $response" >&2
                  if [[ -n "$response_body" ]]; then
                      echo "Response body (truncated): $response_body" >&2

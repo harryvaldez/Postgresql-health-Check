@@ -248,6 +248,12 @@ LONG_QUERY_THRESHOLD="5 minutes"
 # Webhook Configuration
 WEBHOOK_URL=https://your-n8n-instance.com/webhook/edb-health-check
 N8N_JWT_SECRET=your_jwt_secret_here_minimum_32_characters
+WEBHOOK_MAX_RETRIES=3
+WEBHOOK_INITIAL_BACKOFF_SEC=5
+WEBHOOK_MAX_BACKOFF_SEC=30
+WEBHOOK_CONNECT_TIMEOUT_SEC=10
+WEBHOOK_REQUEST_TIMEOUT_SEC=120
+WEBHOOK_ENABLE_COMPACT_FALLBACK=true
 
 # Log Analysis Configuration
 LOG_DIR=/var/log/edb/as9.6
@@ -258,6 +264,37 @@ ERROR_LOG_PATTERNS="FATAL|ERROR|PANIC"
 PATCH_CHECK_ENABLED=true
 EDB_VERSION_CHECK=true
 ```
+
+### Webhook Reliability Tuning
+
+Use these settings to balance delivery reliability with runtime duration.
+
+**Stable network / low latency (default profile):**
+
+```ini
+WEBHOOK_MAX_RETRIES=3
+WEBHOOK_INITIAL_BACKOFF_SEC=5
+WEBHOOK_MAX_BACKOFF_SEC=30
+WEBHOOK_CONNECT_TIMEOUT_SEC=10
+WEBHOOK_REQUEST_TIMEOUT_SEC=120
+WEBHOOK_ENABLE_COMPACT_FALLBACK=true
+```
+
+**Unstable network / frequent timeout profile:**
+
+```ini
+WEBHOOK_MAX_RETRIES=5
+WEBHOOK_INITIAL_BACKOFF_SEC=8
+WEBHOOK_MAX_BACKOFF_SEC=60
+WEBHOOK_CONNECT_TIMEOUT_SEC=15
+WEBHOOK_REQUEST_TIMEOUT_SEC=180
+WEBHOOK_ENABLE_COMPACT_FALLBACK=true
+```
+
+Notes:
+- Higher retries and backoff improve success rate for transient `524`/gateway failures but increase total script runtime.
+- Compact fallback resends a summary payload when full payload delivery fails on timeout-class responses.
+- If cron runs every 15 minutes, avoid overly long timeout/retry combinations that can overlap the next run.
 
 Run with explicit CLI parameters (optional when values are in `.env`):
 
@@ -313,6 +350,14 @@ SSH_PORT=22
 SSH_KEY_FILE=/home/monitor_user/.ssh/id_rsa
 # Optional alternative to SSH key auth (requires sshpass)
 # SSH_PASSWORD=your_ssh_password
+WEBHOOK_URL=https://your-n8n-instance.com/webhook/edb-health-check
+N8N_JWT_SECRET=your_jwt_secret_here_minimum_32_characters
+WEBHOOK_MAX_RETRIES=3
+WEBHOOK_INITIAL_BACKOFF_SEC=5
+WEBHOOK_MAX_BACKOFF_SEC=30
+WEBHOOK_CONNECT_TIMEOUT_SEC=10
+WEBHOOK_REQUEST_TIMEOUT_SEC=120
+WEBHOOK_ENABLE_COMPACT_FALLBACK=true
 ```
 
 2. Rotate the placeholder password immediately.

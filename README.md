@@ -55,7 +55,7 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
         # OR use password auth (requires sshpass):
         # --ssh-password 'your_ssh_password' \
       --db-username edb_monitor_svc \
-      --db-password 'your_secure_password' \
+            --db-password 'your_secure_password_here' \
       --db-port 5444 \
       --db-name edb
     ```
@@ -71,7 +71,7 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
 
     # Remote Database (DB Metrics via psql)
     DB_USERNAME=edb_monitor_svc
-    DB_PASSWORD=your_secure_password
+    DB_PASSWORD=your_secure_password_here
     DB_HOST=db-server.example.com
     DB_PORT=5444
     PGDATABASE=edb
@@ -86,8 +86,21 @@ python build_deploy_package.py --deploy user@your-rhel7-server --remote-path /us
 
     # Webhook Configuration
     WEBHOOK_URL=https://your-n8n-instance.com/webhook/edb-health-check
-    N8N_JWT_SECRET=your_jwt_secret_here
+    N8N_JWT_SECRET=your_jwt_secret_here_minimum_32_characters
+    WEBHOOK_MAX_RETRIES=3
+    WEBHOOK_INITIAL_BACKOFF_SEC=5
+    WEBHOOK_MAX_BACKOFF_SEC=30
+    WEBHOOK_CONNECT_TIMEOUT_SEC=10
+    WEBHOOK_REQUEST_TIMEOUT_SEC=120
+    WEBHOOK_ENABLE_COMPACT_FALLBACK=true
     ```
+
+    Notes:
+    - `WEBHOOK_MAX_RETRIES` controls total webhook attempts (including the first send).
+    - `WEBHOOK_INITIAL_BACKOFF_SEC` and `WEBHOOK_MAX_BACKOFF_SEC` control exponential retry delay.
+    - `WEBHOOK_CONNECT_TIMEOUT_SEC` and `WEBHOOK_REQUEST_TIMEOUT_SEC` tune curl connection and request timeouts.
+    - `WEBHOOK_ENABLE_COMPACT_FALLBACK=true` enables summary-only payload resend after timeout/transient failures.
+    - For recommended stable vs unstable network presets, see `docs/DEPLOYMENT_GUIDE.md` → **Webhook Reliability Tuning**.
 
 ### 2. Set Up the n8n Workflow
 
